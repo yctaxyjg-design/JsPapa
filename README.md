@@ -20,34 +20,52 @@
 - 드래그 앤 드롭, 파일 선택, URL 파라미터, 컨텍스트 메뉴 연동
 - 확대/축소, 원문 텍스트 보기 토글
 
-## 설치 방법 (개발자 모드)
+## 실행 방법 — 두 가지 모드
 
-1. 크롬 에서 `chrome://extensions` 열기
+### A. 크롬 확장 (개발자 모드)
+
+1. 크롬에서 `chrome://extensions` 열기
 2. 오른쪽 위 **개발자 모드** 토글을 켜기
-3. **압축해제된 확장 프로그램을 로드합니다** 클릭
-4. 이 저장소의 `extension/` 폴더 선택
+3. **압축해제된 확장 프로그램을 로드합니다** 클릭 → 이 저장소의
+   `extension/` 폴더 선택
 
-## 사용 방법
+사용:
 
 - 확장 아이콘을 눌러 팝업에서 **파일 선택해서 바로 열기**
-- 뷰어 페이지에 `.hwp` 또는 `.hwpx` 파일을 드래그하여 놓기
+- 뷰어 페이지에 `.hwp` 또는 `.hwpx` 파일을 드래그
 - 웹에 공개된 `.hwp` / `.hwpx` 링크를 **우클릭 → JsPapa 뷰어로 열기**
 - 직접 URL 로 열려면 `chrome-extension://<id>/viewer.html?url=<인코딩된_URL>`
+
+### B. 확장 없이 단독 페이지로 (조직 관리 브라우저 등)
+
+관리자가 **개발자 모드**나 **사이드로드 확장**을 막아 둔 환경에서는
+확장을 설치하지 않아도 그대로 쓸 수 있습니다.
+
+1. 이 저장소를 클론하거나 ZIP 으로 내려받기
+2. 저장소 루트의 **`index.html`** 을 더블클릭 (브라우저에서 `file://` 로 열림)
+3. HWP / HWPX 파일을 창에 드래그하거나 **파일 열기** 버튼
+
+또는 GitHub Pages / Netlify / 사내 정적 서버 같은 곳에 저장소를 그대로 올려서
+`https://내도메인/index.html` 로 접속해도 동일하게 동작합니다.
+단독 페이지에서는 `chrome.*` API 호출 경로가 자동으로 비활성화되고,
+드래그 앤 드롭과 파일 선택만으로 뷰어가 동작합니다.
 
 ## 폴더 구조
 
 ```
-extension/
-├── manifest.json      Manifest V3 매니페스트
-├── background.js      서비스 워커 (컨텍스트 메뉴, 메시지 라우팅)
-├── popup.{html,css,js}  확장 아이콘 팝업
-├── viewer.{html,css,js} 전체 화면 뷰어
-├── icons/             확장 아이콘 (16 / 48 / 128)
-└── lib/
-    ├── zip.js         ZIP 리더 (DecompressionStream 기반)
-    ├── cfb.js         CFB / OLE2 컨테이너 리더
-    ├── hwpx.js        HWPX (OWPML) 파서 & HTML 렌더러
-    └── hwp.js         HWP 5.x 텍스트 추출기
+JsPapa/
+├── index.html         단독 실행 진입점 (file:// / 정적 호스팅용)
+└── extension/
+    ├── manifest.json        Manifest V3 매니페스트
+    ├── background.js        서비스 워커 (컨텍스트 메뉴, 메시지 라우팅)
+    ├── popup.{html,css,js}  확장 아이콘 팝업
+    ├── viewer.{html,css,js} 전체 화면 뷰어 (단독/확장 공용)
+    ├── icons/               확장 아이콘 (16 / 48 / 128)
+    └── lib/
+        ├── zip.js           ZIP 리더 (DecompressionStream 기반)
+        ├── cfb.js           CFB / OLE2 컨테이너 리더
+        ├── hwpx.js          HWPX (OWPML) 파서 & HTML 렌더러
+        └── hwp.js           HWP 5.x 텍스트 추출기
 ```
 
 ## 의존성

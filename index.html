@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>JsPapa — HWP / HWPX 뷰어</title>
+    <link rel="icon" type="image/png" href="extension/icons/icon48.png" />
+    <link rel="stylesheet" href="extension/viewer.css" />
+  </head>
+  <body>
+    <header class="toolbar">
+      <div class="brand">
+        <div class="brand-logo">한</div>
+        <div class="brand-text">
+          <strong>JsPapa</strong>
+          <span>HWP / HWPX 뷰어 · standalone</span>
+        </div>
+      </div>
+
+      <div class="toolbar-center">
+        <span id="file-name" class="file-name">문서 없음</span>
+        <span id="file-meta" class="file-meta"></span>
+      </div>
+
+      <div class="toolbar-actions">
+        <label class="btn" for="open-input">
+          파일 열기
+          <input id="open-input" type="file" accept=".hwp,.hwpx" hidden />
+        </label>
+        <button id="zoom-out" class="btn icon" title="축소">−</button>
+        <span id="zoom-label" class="zoom-label">100%</span>
+        <button id="zoom-in" class="btn icon" title="확대">+</button>
+        <button id="toggle-raw" class="btn" title="원문 텍스트 보기">
+          원문
+        </button>
+      </div>
+    </header>
+
+    <main id="stage" class="stage">
+      <section id="drop-zone" class="drop-zone">
+        <div class="drop-card">
+          <div class="drop-icon">한</div>
+          <h1>HWP / HWPX 문서를 여기로 끌어다 놓으세요</h1>
+          <p>
+            또는 상단 <strong>파일 열기</strong> 버튼을 눌러 문서를 선택하세요.
+          </p>
+          <p class="small">
+            확장 설치 없이 돌아가는 단독 페이지입니다. 모든 파싱은 이
+            브라우저 안에서만 이루어집니다.
+          </p>
+        </div>
+      </section>
+
+      <section id="document" class="document" hidden></section>
+      <section id="raw" class="raw" hidden></section>
+
+      <section id="error" class="error" hidden>
+        <h2>문서를 여는 중 문제가 발생했습니다</h2>
+        <pre id="error-message"></pre>
+      </section>
+
+      <section id="loader" class="loader" hidden>
+        <div class="spinner"></div>
+        <p>문서를 파싱하고 있습니다…</p>
+      </section>
+    </main>
+
+    <script src="extension/lib/zip.js"></script>
+    <script src="extension/lib/cfb.js"></script>
+    <script src="extension/lib/hwpx.js"></script>
+    <script src="extension/lib/hwp.js"></script>
+    <script src="extension/viewer.js"></script>
+  </body>
+</html>

@@ -166,10 +166,18 @@
     }
   }
 
+  const hasChromeStorage =
+    typeof chrome !== "undefined" &&
+    chrome &&
+    chrome.storage &&
+    chrome.storage.session;
+
   async function loadFromSession() {
-    if (!chrome.storage || !chrome.storage.session) {
+    if (!hasChromeStorage) {
       throw new Error(
-        "chrome.storage.session 이 없어 파일을 불러올 수 없습니다.",
+        "chrome.storage.session 이 없어 파일을 불러올 수 없습니다. " +
+          "확장이 아닌 단독 페이지로 실행 중이라면 파일을 드래그하거나 " +
+          "상단 '파일 열기' 버튼을 사용하세요.",
       );
     }
     const { pendingDoc } = await chrome.storage.session.get("pendingDoc");
@@ -235,7 +243,7 @@
 
   (async function boot() {
     const params = new URLSearchParams(location.search);
-    if (params.get("source") === "storage") {
+    if (params.get("source") === "storage" && hasChromeStorage) {
       try {
         await loadFromSession();
       } catch (err) {
