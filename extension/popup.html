@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <title>JsPapa - HWP 뷰어</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <header>
+      <div class="logo">한</div>
+      <div class="title">
+        <h1>JsPapa</h1>
+        <p>HWP / HWPX 뷰어</p>
+      </div>
+    </header>
+
+    <main>
+      <button id="open-viewer" class="primary">뷰어 열기</button>
+      <label class="file-picker" for="file-input">
+        <span>파일 선택해서 바로 열기</span>
+        <input id="file-input" type="file" accept=".hwp,.hwpx" />
+      </label>
+      <p class="hint">
+        .hwp / .hwpx 파일을 드래그해서 뷰어 창에 놓아도 열립니다.
+      </p>
+    </main>
+
+    <footer>
+      <span>v0.1.0 · pure JS · no backend</span>
+    </footer>
+
+    <script src="popup.js"></script>
+  </body>
+</html>

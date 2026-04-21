@@ -1,0 +1,41 @@
+{
+  "manifest_version": 3,
+  "name": "JsPapa - HWP/HWPX Viewer",
+  "version": "0.1.0",
+  "description": "HWP / HWPX 한글 문서를 크롬에서 바로 열어볼 수 있는 순수 JavaScript 뷰어 확장 프로그램",
+  "default_locale": "ko",
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "JsPapa - HWP 뷰어",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "permissions": ["storage", "contextMenus"],
+  "host_permissions": ["<all_urls>"],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "viewer.html",
+        "viewer.js",
+        "viewer.css",
+        "lib/*.js",
+        "icons/*"
+      ],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'; connect-src 'self' file: blob: data: https:;"
+  }
+}
