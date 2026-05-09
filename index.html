@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>iPad 전원 스케줄러 · 단축어 자동화 가이드</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<header class="hero">
+  <h1>iPad 전원 스케줄러</h1>
+  <p class="subtitle">iOS 단축어(Shortcuts) 자동화로 정해진 시간에 화면을 켜고/잠그는 일정을 만드세요.</p>
+</header>
+
+<main>
+  <section class="notice">
+    <h2>먼저 알아두세요</h2>
+    <p>
+      iPadOS는 서드파티 앱이 기기 전원을 직접 켜거나 끌 수 없습니다.
+      대신 <strong>단축어 앱의 "오토메이션"</strong> 기능을 이용하면 시간대별로
+      <em>화면 잠금</em>, <em>집중 모드 전환</em>, <em>소리 끄기</em>, <em>저전력 모드</em> 등을
+      자동 실행할 수 있습니다. 이 도구는 그 자동화를 어떻게 설정해야 하는지
+      단계별 가이드를 만들어 줍니다.
+    </p>
+  </section>
+
+  <section class="card">
+    <h2>1. 일정 추가</h2>
+    <form id="schedule-form">
+      <div class="row">
+        <label>
+          이름
+          <input type="text" id="label" placeholder="예: 평일 아침 켜기" required />
+        </label>
+        <label>
+          동작
+          <select id="action" required>
+            <option value="wake">화면 켜기 (오토메이션 시작)</option>
+            <option value="lock">화면 잠그기</option>
+            <option value="focus-on">집중 모드 켜기</option>
+            <option value="focus-off">집중 모드 끄기</option>
+            <option value="lowpower-on">저전력 모드 켜기</option>
+            <option value="lowpower-off">저전력 모드 끄기</option>
+            <option value="mute">무음 모드</option>
+          </select>
+        </label>
+        <label>
+          시간
+          <input type="time" id="time" required />
+        </label>
+      </div>
+
+      <fieldset class="days">
+        <legend>요일</legend>
+        <label><input type="checkbox" name="day" value="0" /> 일</label>
+        <label><input type="checkbox" name="day" value="1" checked /> 월</label>
+        <label><input type="checkbox" name="day" value="2" checked /> 화</label>
+        <label><input type="checkbox" name="day" value="3" checked /> 수</label>
+        <label><input type="checkbox" name="day" value="4" checked /> 목</label>
+        <label><input type="checkbox" name="day" value="5" checked /> 금</label>
+        <label><input type="checkbox" name="day" value="6" /> 토</label>
+      </fieldset>
+
+      <button type="submit">일정 추가</button>
+    </form>
+  </section>
+
+  <section class="card">
+    <h2>2. 등록된 일정</h2>
+    <ul id="schedule-list" class="schedule-list">
+      <li class="empty">아직 등록된 일정이 없습니다.</li>
+    </ul>
+    <div class="actions">
+      <button type="button" id="export-btn" class="ghost">JSON 내보내기</button>
+      <label class="ghost-button">
+        JSON 가져오기
+        <input type="file" id="import-input" accept="application/json" hidden />
+      </label>
+      <button type="button" id="clear-btn" class="ghost danger">전체 삭제</button>
+    </div>
+  </section>
+
+  <section class="card guide">
+    <h2>3. iPad에서 설정하는 법</h2>
+    <p>아래 절차를 따라 단축어 앱에 오토메이션을 등록하세요. 각 일정마다 한 번씩 진행하면 됩니다.</p>
+    <div id="guide-output">
+      <p class="empty">위에서 일정을 추가하면 맞춤 가이드가 표시됩니다.</p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <p>이 페이지는 iPad의 전원을 직접 제어하지 않습니다. 일정 데이터는 브라우저(localStorage)에만 저장됩니다.</p>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
