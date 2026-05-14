@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Bash(jq:*)",
+      "Bash(python3:*)",
+      "Bash(grep:*)",
+      "Bash(sed:*)",
+      "Bash(awk:*)",
+      "Bash(date:*)",
+      "Bash(mkdir:*)",
+      "Bash(ls:*)",
+      "Bash(cat:*)",
+      "Bash(head:*)",
+      "Bash(tail:*)",
+      "Bash(wc:*)",
+      "Bash(find:*)",
+      "Bash(cp:*)",
+      "Bash(mv:*)",
+      "Bash(rm:-f *)",
+      "Bash(chmod:*)",
+      "Bash(bash scripts/economist/*)",
+      "Bash(./scripts/economist/*)",
+      "Bash(scripts/economist/*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git rev-parse:*)",
+      "WebFetch(domain:economist.com)",
+      "WebFetch(domain:www.economist.com)"
+    ],
+    "deny": [
+      "WebFetch(domain:click.e.economist.com)",
+      "Bash(curl:*click.e.economist.com*)"
+    ]
+  }
+}
