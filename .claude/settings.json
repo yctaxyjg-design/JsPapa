@@ -22,12 +22,17 @@
       "Bash(bash scripts/economist/*)",
       "Bash(./scripts/economist/*)",
       "Bash(scripts/economist/*)",
+      "Bash(bash scripts/ft-edit/*)",
+      "Bash(./scripts/ft-edit/*)",
+      "Bash(scripts/ft-edit/*)",
       "Bash(git status:*)",
       "Bash(git diff:*)",
       "Bash(git log:*)",
       "Bash(git rev-parse:*)",
       "WebFetch(domain:economist.com)",
-      "WebFetch(domain:www.economist.com)"
+      "WebFetch(domain:www.economist.com)",
+      "WebFetch(domain:ft.com)",
+      "WebFetch(domain:www.ft.com)"
     ],
     "deny": [
       "WebFetch(domain:click.e.economist.com)",
