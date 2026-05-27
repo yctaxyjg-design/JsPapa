@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>트레몰로 하모니카 24홀 (C키) 연습</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<header class="hero">
+  <h1>🎵 트레몰로 하모니카 <span class="accent">24홀 · C키</span></h1>
+  <p class="subtitle">구멍을 눌러 소리를 듣고, 음을 찾고, 동요를 따라 치고, 퀴즈로 익혀보세요.</p>
+</header>
+
+<nav class="tabs" id="tabs">
+  <button class="tab active" data-tab="diagram">🎹 도면 & 소리</button>
+  <button class="tab" data-tab="finder">🔎 음 ↔ 구멍 찾기</button>
+  <button class="tab" data-tab="practice">🎼 음계 · 동요</button>
+  <button class="tab" data-tab="quiz">🧠 퀴즈</button>
+</nav>
+
+<main>
+  <!-- 도면 -->
+  <section class="panel active" id="diagram">
+    <div class="card">
+      <div class="panel-head">
+        <h2>하모니카 도면</h2>
+        <div class="toggles">
+          <label class="switch"><input type="checkbox" id="show-names" checked /> 음 이름 보기</label>
+          <label class="switch"><input type="checkbox" id="show-solfege" checked /> 계이름(도레미)</label>
+        </div>
+      </div>
+      <p class="hint">
+        위 칸은 <strong>불기(날숨 ▲)</strong>, 아래 칸은 <strong>들숨(▼)</strong> 입니다.
+        24홀 트레몰로는 윗줄·아랫줄 두 리드가 같은 음으로 살짝 어긋나게 울려(트레몰로) 떨림 소리를 냅니다.
+        그래서 실제로는 <strong>12개 음 위치</strong>로 익히면 됩니다.
+      </p>
+      <div class="harmonica" id="harmonica"></div>
+      <p class="now-playing" id="now-playing">구멍을 눌러보세요.</p>
+    </div>
+  </section>
+
+  <!-- 찾기 -->
+  <section class="panel" id="finder">
+    <div class="card">
+      <h2>음으로 구멍 찾기</h2>
+      <p class="hint">음을 고르면 어느 구멍을, 불기/들숨 중 무엇으로 연주하는지 알려줍니다.</p>
+      <div class="note-buttons" id="finder-notes"></div>
+      <div class="finder-result" id="finder-result">위에서 음을 골라보세요.</div>
+    </div>
+  </section>
+
+  <!-- 연습 -->
+  <section class="panel" id="practice">
+    <div class="card">
+      <div class="panel-head">
+        <h2>음계 · 동요 따라치기</h2>
+        <select id="song-select"></select>
+      </div>
+      <div class="player-controls">
+        <button id="play-song" class="primary">▶ 전체 재생</button>
+        <button id="stop-song" class="ghost">■ 정지</button>
+        <label class="tempo">
+          빠르기 <input type="range" id="tempo" min="60" max="200" value="110" />
+          <span id="tempo-val">110</span> BPM
+        </label>
+      </div>
+      <div class="song-sheet" id="song-sheet"></div>
+    </div>
+  </section>
+
+  <!-- 퀴즈 -->
+  <section class="panel" id="quiz">
+    <div class="card">
+      <div class="panel-head">
+        <h2>퀴즈</h2>
+        <div class="quiz-mode">
+          <button class="mode-btn active" data-mode="listen">👂 듣고 맞히기</button>
+          <button class="mode-btn" data-mode="read">👀 보고 맞히기</button>
+        </div>
+      </div>
+      <div class="quiz-score">점수 <strong id="score">0</strong> / <span id="total">0</span></div>
+      <div class="quiz-stage" id="quiz-stage"></div>
+      <div class="quiz-options" id="quiz-options"></div>
+      <div class="quiz-feedback" id="quiz-feedback"></div>
+      <button id="next-quiz" class="primary" hidden>다음 문제 ▶</button>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <p>솔로 튜닝(3옥타브 C장조) 기준입니다. 제조사·모델에 따라 저음부 배열이 조금 다를 수 있어요. 소리는 브라우저에서 합성됩니다(설치 불필요).</p>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
