@@ -26,3 +26,9 @@ TestResults.xml
 economist/out/
 # Local Claude Code settings overrides (machine-specific)
 .claude/settings.local.json
+
+### Python (kifrs-bot) ###
+__pycache__/
+*.pyc
+.venv/
+.env
