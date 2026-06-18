@@ -24,5 +24,14 @@ TestResults.xml
 ### Economist scheduler ###
 # Generated weekly analyses (personal copyright-restricted output, never commit)
 economist/out/
+
+### FT Edit scheduler ###
+# Generated daily analyses + local index cache (personal copyright-restricted output, never commit)
+ft-edit/out/
+
+### Python ###
+__pycache__/
+*.pyc
+
 # Local Claude Code settings overrides (machine-specific)
 .claude/settings.local.json
