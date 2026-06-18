@@ -30,3 +30,7 @@ iPadOS는 보안·전력 관리 정책상 **서드파티 앱이 기기의 전원
 python3 -m http.server 8000
 # → http://localhost:8000
 ```
+
+## 다른 앱
+
+- [`harmonica/`](harmonica/) — 트레몰로 하모니카 24홀(C키) 학습 앱. 도면·소리, 음↔구멍 찾기, 음계·동요 따라치기, 퀴즈.
