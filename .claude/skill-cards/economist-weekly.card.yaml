@@ -1,0 +1,84 @@
+# Skill Card — NVIDIA Verified Agent Skills 방식의 머신 리더블 메타데이터
+# 참고: https://developer.nvidia.com/blog/nvidia-verified-agent-skills-provide-capability-governance-for-ai-agents/
+# 스펙 기반: agentskills.io 오픈 스킬 스펙 (Claude Code / Codex / Cursor 호환)
+schema_version: "1.0"
+
+skill:
+  name: economist-weekly
+  display_name: "The Economist 주간판 한국어 심층 분석"
+  version: "1.0.0"
+  type: claude-code-slash-command
+  entrypoint: .claude/commands/economist-weekly.md
+  summary: >-
+    The Economist 주간판 4개 섹션(Business, Finance & Economics,
+    Science & Technology, Culture) 기사를 수집해 저작권 안전 범위 내
+    한국어 심층 분석으로 정리하고 iCloud Drive에 저장한다.
+
+ownership:
+  author: yangjaegwon (yctaxyjg@gmail.com)
+  maintainer: yangjaegwon
+  repository: yctaxyjg-design/JsPapa
+  license: 저장소 LICENSE 따름 (개인 학습용, 외부 배포 금지)
+  intended_use: "사용자 본인 1인 학습용. 결과물 외부 공유·게시 금지를 전제로 작성."
+
+capabilities:
+  - 주간판 인덱스 파싱 → 섹션별 기사 목록 추출
+  - 기사별 메타데이터/첫 문단/AI summary 추출 (페이월 프리뷰 범위)
+  - 저작권 가드 하의 한국어 분석 마크다운 생성
+  - iCloud Drive(가능 시) 또는 로컬 저장
+
+dependencies:
+  runtime:
+    - python3        # economist_parser.py (표준 라이브러리만 사용: json, re, sys, pathlib)
+    - bash
+    - jq
+    - git
+  scripts:
+    - scripts/economist/weekly_url.sh
+    - scripts/economist/iso_week.sh
+    - scripts/economist/extract_next_data.sh
+    - scripts/economist/parse_article.sh
+    - scripts/economist/parse_weekly_index.sh
+    - scripts/economist/economist_parser.py   # 표준 라이브러리만, 외부 PyPI 의존 없음
+    - scripts/economist/save_analysis.sh
+  templates:
+    - economist/templates/week_template.md
+    - economist/templates/article_block.md
+  third_party_packages: []        # 외부 패키지 0개 — 공급망 노출면 없음
+  network_egress:
+    - www.economist.com           # WebFetch allowlist (settings.json)
+    - economist.com
+
+permissions:
+  # .claude/settings.json 의 실제 권한과 일치해야 함 (excessive-permission 점검 대상)
+  filesystem_write:
+    - economist/out/              # 로컬 폴백 저장 경로
+    - "~/Library/Mobile Documents/com~apple~CloudDocs/Economist_Weekly_Analysis/"  # iCloud (macOS)
+    - /tmp                        # mktemp 임시 파일
+  bash_allow: [jq, python3, grep, sed, awk, date, mkdir, ls, cat, head, tail, wc, find, cp, mv, "rm -f", chmod, "bash scripts/economist/*", "git status/diff/log/rev-parse"]
+  network_allow: [economist.com, www.economist.com]
+  network_deny: [click.e.economist.com]   # Cloudflare 차단 + 명시적 deny
+
+limitations:
+  - "페이월: 기사당 첫 1문단 + 메타데이터만 추출 가능 (isAccessibleForFree=false)."
+  - "Gmail MCP 끊김(2026-04-18~)으로 이메일 기반 접근 불가."
+  - "economist.com Chrome MCP 차단 (safety restriction)."
+  - "click.e.economist.com Cloudflare 차단 — 호출 금지."
+  - "페이지 셰이프 변경 시 economist_parser.py 의 _SECTION_ALIASES / _iter_section_items 재점검 필요."
+  - "iCloud 경로는 macOS 사용자 환경 전용. 다른 환경에서는 자동으로 로컬 폴백."
+
+guardrails:
+  copyright:
+    legal_basis: "한국 저작권법 §28(인용), §22(2차적저작물) 준수"
+    quote_budget: "기사당 영문 누적 200~300자 이내, 해설 분량 > 인용 분량"
+    prohibited: ["본문 50%+ 번역", "직역 후 표현만 변경한 풀어쓰기", "페이월 우회/전체 추출"]
+  privacy:
+    - "iMessage·이메일 등 외부 전송 일체 금지 (사적 이용 범위 유지)"
+    - "결과물 외부 공유·게시 금지"
+
+verification:
+  status: self-verified            # NVIDIA-verified 아님. 본인 점검(self-attested).
+  method: "SkillSpector 카테고리 기반 수동 점검 (economist-weekly.security-review.md 참조)"
+  last_reviewed: "2026-06-05"
+  signed: false                    # 암호화 서명 미적용 (개인 저장소)
+  security_review: .claude/skill-cards/economist-weekly.security-review.md
