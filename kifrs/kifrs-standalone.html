@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KIFRS 검색 — 한국채택국제회계기준</title>
+  <meta name="description" content="한국채택국제회계기준(K-IFRS) 기업회계기준서를 브라우저에서 검색하는 정적 RAG 검색 앱" />
+  <style>
+:root {
+  --bg: #f5f5f7;
+  --surface: #ffffff;
+  --text: #1d1d1f;
+  --muted: #6e6e73;
+  --accent: #007aff;
+  --accent-hover: #0066d6;
+  --danger: #ff3b30;
+  --border: #d2d2d7;
+  --radius: 14px;
+  --shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue",
+    "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+.hero {
+  text-align: center;
+  padding: 56px 20px 32px;
+  background: linear-gradient(180deg, #ffffff 0%, var(--bg) 100%);
+}
+
+.hero h1 {
+  margin: 0 0 8px;
+  font-size: 34px;
+  letter-spacing: -0.02em;
+}
+
+.subtitle {
+  margin: 0;
+  color: var(--muted);
+  font-size: 17px;
+}
+
+main {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 0 20px 64px;
+}
+
+.notice {
+  background: #fff8e6;
+  border: 1px solid #f6dc7a;
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  margin-bottom: 24px;
+}
+
+.notice h2 {
+  margin: 0 0 8px;
+  font-size: 15px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #8a6d00;
+}
+
+.notice p {
+  margin: 0;
+  font-size: 14px;
+  color: #5b4a00;
+}
+
+.card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow);
+}
+
+.card h2 {
+  margin: 0 0 16px;
+  font-size: 20px;
+  letter-spacing: -0.01em;
+}
+
+form .row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+}
+
+form label {
+  display: flex;
+  flex-direction: column;
+  font-size: 13px;
+  color: var(--muted);
+  gap: 6px;
+}
+
+form input[type="text"],
+form input[type="time"],
+form select {
+  font: inherit;
+  font-size: 15px;
+  color: var(--text);
+  padding: 10px 12px;
+  background: #fbfbfd;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+form input:focus,
+form select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.15);
+}
+
+.days {
+  border: none;
+  padding: 0;
+  margin: 16px 0 20px;
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.days legend {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 8px;
+  width: 100%;
+}
+
+.days label {
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: var(--text);
+  background: #fbfbfd;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 6px 14px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.days input { accent-color: var(--accent); }
+
+button,
+.ghost-button {
+  font: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  padding: 10px 18px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s ease, opacity 0.15s ease;
+}
+
+form > button[type="submit"] {
+  background: var(--accent);
+  color: white;
+}
+
+form > button[type="submit"]:hover { background: var(--accent-hover); }
+
+.ghost,
+.ghost-button {
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid var(--border);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ghost:hover,
+.ghost-button:hover { background: #f0f0f3; }
+
+.ghost.danger { color: var(--danger); }
+
+.actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+.schedule-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.schedule-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  background: #fbfbfd;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.schedule-list .meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.schedule-list .meta strong { font-size: 16px; }
+.schedule-list .meta span { font-size: 13px; color: var(--muted); }
+
+.schedule-list .delete {
+  background: transparent;
+  color: var(--danger);
+  border: none;
+  padding: 4px 8px;
+  font-size: 14px;
+}
+
+.empty {
+  color: var(--muted);
+  font-size: 14px;
+  padding: 12px 0;
+  text-align: center;
+}
+
+.guide-step {
+  background: #fbfbfd;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 12px;
+}
+
+.guide-step h3 {
+  margin: 0 0 10px;
+  font-size: 16px;
+}
+
+.guide-step ol {
+  margin: 0;
+  padding-left: 20px;
+  font-size: 14px;
+  color: var(--text);
+}
+
+.guide-step ol li { margin-bottom: 6px; }
+
+.guide-step code {
+  background: #eef0f3;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+}
+
+footer {
+  text-align: center;
+  padding: 24px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+@media (max-width: 600px) {
+  form .row { grid-template-columns: 1fr; }
+  .hero h1 { font-size: 28px; }
+}
+
+/* KIFRS 검색 전용 스타일 — 공통 styles.css 의 변수를 재사용한다 */
+
+.search-card { padding: 20px; }
+
+.search-box input {
+  width: 100%;
+  font: inherit;
+  font-size: 18px;
+  padding: 14px 16px;
+  background: #fbfbfd;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.search-box input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.15);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.chip {
+  background: #fbfbfd;
+  color: var(--accent);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 14px;
+}
+
+.chip:hover { background: #f0f0f3; }
+
+.status {
+  margin: 14px 2px 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.results {
+  list-style: none;
+  margin: 20px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.result {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  box-shadow: var(--shadow);
+}
+
+.result-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+
+.badge {
+  background: var(--accent);
+  color: #fff;
+  border-radius: 6px;
+  padding: 2px 8px;
+  font-weight: 600;
+}
+
+.ifrs {
+  background: #eef0f3;
+  color: var(--muted);
+  border-radius: 6px;
+  padding: 2px 8px;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+}
+
+.cat { color: var(--muted); }
+
+.score {
+  margin-left: auto;
+  color: var(--muted);
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 11px;
+}
+
+.result h3 {
+  margin: 0 0 6px;
+  font-size: 18px;
+  letter-spacing: -0.01em;
+}
+
+.result p {
+  margin: 0 0 10px;
+  font-size: 14px;
+  color: var(--text);
+}
+
+.kws { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.kw {
+  font-size: 12px;
+  color: var(--muted);
+  background: #fbfbfd;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 2px 8px;
+}
+
+mark {
+  background: #fff1a8;
+  color: inherit;
+  border-radius: 3px;
+  padding: 0 1px;
+}
+
+.corpus-meta {
+  margin-top: 24px;
+  font-size: 12px;
+  color: var(--muted);
+  text-align: center;
+}
+
+@media (max-width: 600px) {
+  .score { margin-left: 0; width: 100%; }
+}
+
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <h1>KIFRS 검색</h1>
+    <p class="subtitle">한국채택국제회계기준(K-IFRS) 기업회계기준서 검색</p>
+  </header>
+
+  <main>
+    <div class="notice">
+      <h2>안내</h2>
+      <p>
+        이 파일은 단독 실행본(standalone)입니다. 인터넷·서버 없이 동작합니다. 이 검색은 기준서 <strong>색인(번호·제목·대응 IFRS·요약·키워드)</strong>을 대상으로 합니다.
+        기준서 <strong>전문(全文)</strong>은 한국회계기준원에 저작권이 있어 포함하지 않았습니다.
+        전문 RAG로 확장하려면 <code>build/</code> 안내를 참고하세요.
+      </p>
+    </div>
+
+    <section class="card search-card">
+      <div class="search-box">
+        <input id="q" type="text" placeholder="예: 리스, 수익인식, 손상, 1116, 금융상품…" autocomplete="off" autofocus />
+      </div>
+      <div class="chips">
+        <button class="chip" data-q="리스 사용권자산">리스</button>
+        <button class="chip" data-q="수익인식 5단계">수익인식</button>
+        <button class="chip" data-q="자산손상 회수가능액">손상</button>
+        <button class="chip" data-q="금융상품 기대신용손실">금융상품</button>
+        <button class="chip" data-q="연결재무제표 지배력">연결</button>
+        <button class="chip" data-q="이연법인세 일시적차이">법인세</button>
+        <button class="chip" data-q="1116">1116호</button>
+      </div>
+      <p id="status" class="status">색인을 불러오는 중…</p>
+    </section>
+
+    <ul id="results" class="results"></ul>
+
+    <p id="corpus-meta" class="corpus-meta"></p>
+  </main>
+
+  <footer>
+    <p>K-IFRS 기준서 색인 · 클라이언트 사이드 BM25 검색 · 서버 없음</p>
+  </footer>
+  <script>window.__KIFRS_CORPUS__ = {
+  "version": "2026-06-18",
+  "license": "카탈로그(기준서 번호·국문 제목·대응 IFRS·요약·키워드)는 공개 사실 정보를 바탕으로 작성한 색인입니다. 기준서 전문(全文)은 저작권이 한국회계기준원에 있으므로 본 저장소에 포함하지 않습니다. 전문 검색이 필요하면 build/fetch_kifrs.py 안내에 따라 적법하게 확보한 원문을 더하세요.",
+  "source": "한국채택국제회계기준(K-IFRS) 기업회계기준서 — 한국회계기준원(KASB) 공표 기준서 체계",
+  "standards": [
+    { "no": "1001", "ifrs": "IAS 1", "title": "재무제표 표시", "category": "재무제표 표시·공시", "summary": "재무제표의 작성과 표시에 대한 전반적 요구사항, 구조, 최소 내용을 규정한다. 계속기업, 발생기준, 중요성과 통합표시, 상계금지, 비교정보, 표시의 계속성 등 일반사항과 재무상태표·포괄손익계산서·자본변동표·주석의 표시방법을 다룬다.", "keywords": ["재무제표", "재무상태표", "포괄손익계산서", "자본변동표", "주석", "계속기업", "비교정보", "유동·비유동 구분", "중요성"] },
+    { "no": "1002", "ifrs": "IAS 2", "title": "재고자산", "category": "자산", "summary": "재고자산의 취득원가 결정, 비용으로 인식하는 방법, 순실현가능가치로의 감액을 규정한다. 매입원가·전환원가·기타원가의 범위, 선입선출법과 가중평균법 등 단위원가 결정방법, 저가법 평가를 다룬다.", "keywords": ["재고자산", "취득원가", "순실현가능가치", "저가법", "선입선출법", "가중평균법", "전환원가", "평가손실"] },
+    { "no": "1007", "ifrs": "IAS 7", "title": "현금흐름표", "category": "재무제표 표시·공시", "summary": "현금및현금성자산의 변동을 영업·투자·재무활동으로 구분하여 보고하는 현금흐름표의 작성을 규정한다. 직접법과 간접법, 이자·배당금·법인세 현금흐름의 분류를 다룬다.", "keywords": ["현금흐름표", "영업활동", "투자활동", "재무활동", "직접법", "간접법", "현금성자산"] },
+    { "no": "1008", "ifrs": "IAS 8", "title": "회계정책, 회계추정치 변경과 오류", "category": "재무제표 표시·공시", "summary": "회계정책의 선택과 적용, 회계정책 변경·회계추정치 변경·오류수정의 회계처리와 공시를 규정한다. 회계정책 변경과 오류수정은 소급적용·소급재작성, 추정치 변경은 전진적용한다.", "keywords": ["회계정책", "회계추정치 변경", "오류수정", "소급적용", "소급재작성", "전진적용"] },
+    { "no": "1010", "ifrs": "IAS 10", "title": "보고기간후사건", "category": "재무제표 표시·공시", "summary": "보고기간말과 재무제표 발행승인일 사이에 발생한 사건의 회계처리를 규정한다. 수정을 요하는 사건과 수정을 요하지 않는 사건을 구분하고 배당·계속기업 관련 처리를 다룬다.", "keywords": ["보고기간후사건", "수정을 요하는 사건", "발행승인일", "배당", "계속기업"] },
+    { "no": "1012", "ifrs": "IAS 12", "title": "법인세", "category": "부채·비용", "summary": "당기법인세와 이연법인세의 회계처리를 규정한다. 일시적차이에 따른 이연법인세자산·부채의 인식과 측정, 이연법인세자산의 실현가능성, 표시와 공시를 다룬다.", "keywords": ["법인세", "이연법인세", "일시적차이", "이연법인세자산", "이연법인세부채", "실현가능성", "당기법인세"] },
+    { "no": "1016", "ifrs": "IAS 16", "title": "유형자산", "category": "자산", "summary": "유형자산의 인식, 취득원가 측정, 후속측정(원가모형·재평가모형), 감가상각, 제거를 규정한다. 감가상각방법, 내용연수, 잔존가치, 재평가잉여금을 다룬다.", "keywords": ["유형자산", "감가상각", "원가모형", "재평가모형", "내용연수", "잔존가치", "재평가잉여금", "취득원가"] },
+    { "no": "1019", "ifrs": "IAS 19", "title": "종업원급여", "category": "부채·비용", "summary": "단기종업원급여, 퇴직급여(확정기여제도·확정급여제도), 기타장기종업원급여, 해고급여의 회계처리를 규정한다. 확정급여채무의 측정, 보험수리적손익, 순확정급여부채를 다룬다.", "keywords": ["종업원급여", "퇴직급여", "확정급여제도", "확정기여제도", "보험수리적손익", "순확정급여부채", "해고급여"] },
+    { "no": "1020", "ifrs": "IAS 20", "title": "정부보조금의 회계처리와 정부지원의 공시", "category": "자산", "summary": "정부보조금의 인식과 표시, 정부지원의 공시를 규정한다. 수익관련보조금과 자산관련보조금의 처리, 이연수익법과 자산차감법을 다룬다.", "keywords": ["정부보조금", "정부지원", "수익관련보조금", "자산관련보조금", "이연수익", "자산차감법"] },
+    { "no": "1021", "ifrs": "IAS 21", "title": "환율변동효과", "category": "기타", "summary": "외화거래와 해외사업장의 재무제표 환산을 규정한다. 기능통화와 표시통화, 화폐성·비화폐성항목의 환산, 외환차이의 인식, 해외사업장순투자를 다룬다.", "keywords": ["환율변동", "기능통화", "표시통화", "외화환산", "외환차이", "해외사업장", "화폐성항목"] },
+    { "no": "1023", "ifrs": "IAS 23", "title": "차입원가", "category": "부채·비용", "summary": "적격자산의 취득·건설·생산과 직접 관련된 차입원가의 자본화를 규정한다. 자본화 대상·기간, 자본화이자율, 자본화 중단을 다룬다.", "keywords": ["차입원가", "자본화", "적격자산", "자본화이자율", "이자비용"] },
+    { "no": "1024", "ifrs": "IAS 24", "title": "특수관계자 공시", "category": "재무제표 표시·공시", "summary": "특수관계자와의 거래, 약정, 채권·채무 잔액에 관한 공시를 규정한다. 특수관계자의 범위, 주요 경영진에 대한 보상 공시를 다룬다.", "keywords": ["특수관계자", "특수관계자거래", "주요 경영진 보상", "지배기업", "공시"] },
+    { "no": "1027", "ifrs": "IAS 27", "title": "별도재무제표", "category": "연결·관계기업", "summary": "지배기업·공동기업 참여자·관계기업 투자자가 별도재무제표를 작성할 때 종속기업·공동기업·관계기업 투자의 회계처리와 공시를 규정한다.", "keywords": ["별도재무제표", "종속기업 투자", "원가법", "지분법", "공정가치"] },
+    { "no": "1028", "ifrs": "IAS 28", "title": "관계기업과 공동기업에 대한 투자", "category": "연결·관계기업", "summary": "관계기업과 공동기업에 대한 투자의 회계처리로 지분법 적용을 규정한다. 유의적 영향력, 지분법 적용·중단, 손상을 다룬다.", "keywords": ["관계기업", "공동기업", "지분법", "유의적 영향력", "투자손상"] },
+    { "no": "1029", "ifrs": "IAS 29", "title": "초인플레이션 경제에서의 재무보고", "category": "기타", "summary": "초인플레이션 경제의 기능통화로 작성하는 재무제표를 보고기간말 현재 측정단위로 재작성하는 방법을 규정한다.", "keywords": ["초인플레이션", "측정단위", "재작성", "일반물가지수"] },
+    { "no": "1032", "ifrs": "IAS 32", "title": "금융상품: 표시", "category": "금융상품", "summary": "금융상품의 금융부채·지분상품 분류, 관련 이자·배당·손익의 표시, 금융자산과 금융부채의 상계를 규정한다.", "keywords": ["금융상품", "금융부채", "지분상품", "상계", "복합금융상품", "자기주식"] },
+    { "no": "1033", "ifrs": "IAS 33", "title": "주당이익", "category": "재무제표 표시·공시", "summary": "주당이익의 산정과 표시를 규정한다. 기본주당이익과 희석주당이익, 가중평균유통보통주식수, 잠재적보통주를 다룬다.", "keywords": ["주당이익", "기본주당이익", "희석주당이익", "가중평균유통보통주식수", "잠재적보통주"] },
+    { "no": "1034", "ifrs": "IAS 34", "title": "중간재무보고", "category": "재무제표 표시·공시", "summary": "중간재무보고서의 최소 내용과 인식·측정 원칙을 규정한다. 중간기간 회계처리, 계절성, 비교표시 대상기간을 다룬다.", "keywords": ["중간재무보고", "중간재무제표", "계절성", "비교표시"] },
+    { "no": "1036", "ifrs": "IAS 36", "title": "자산손상", "category": "자산", "summary": "자산의 장부금액이 회수가능액을 초과하지 않도록 손상차손을 인식하는 방법을 규정한다. 회수가능액(순공정가치와 사용가치), 현금창출단위, 영업권 손상검사, 손상차손환입을 다룬다.", "keywords": ["자산손상", "손상차손", "회수가능액", "사용가치", "현금창출단위", "영업권 손상", "손상차손환입"] },
+    { "no": "1037", "ifrs": "IAS 37", "title": "충당부채, 우발부채, 우발자산", "category": "부채·비용", "summary": "충당부채의 인식·측정과 우발부채·우발자산의 공시를 규정한다. 현재의무, 자원유출 가능성, 최선의 추정치, 손실부담계약, 구조조정충당부채를 다룬다.", "keywords": ["충당부채", "우발부채", "우발자산", "현재의무", "손실부담계약", "구조조정충당부채", "최선의 추정치"] },
+    { "no": "1038", "ifrs": "IAS 38", "title": "무형자산", "category": "자산", "summary": "무형자산의 인식, 취득원가 측정, 후속측정, 상각을 규정한다. 식별가능성, 내부창출 무형자산(연구·개발), 내용연수가 비한정인 무형자산을 다룬다.", "keywords": ["무형자산", "식별가능성", "연구개발", "개발비", "상각", "비한정 내용연수", "영업권 제외"] },
+    { "no": "1040", "ifrs": "IAS 40", "title": "투자부동산", "category": "자산", "summary": "임대수익이나 시세차익을 위해 보유하는 투자부동산의 인식·측정·공시를 규정한다. 원가모형과 공정가치모형, 계정대체를 다룬다.", "keywords": ["투자부동산", "공정가치모형", "원가모형", "임대수익", "계정대체"] },
+    { "no": "1041", "ifrs": "IAS 41", "title": "농림어업", "category": "자산", "summary": "농림어업활동과 관련된 생물자산과 수확물의 회계처리를 규정한다. 공정가치에서 처분부대원가를 차감한 금액으로 측정한다.", "keywords": ["농림어업", "생물자산", "수확물", "공정가치", "처분부대원가"] },
+    { "no": "1101", "ifrs": "IFRS 1", "title": "한국채택국제회계기준의 최초채택", "category": "기타", "summary": "K-IFRS를 최초로 채택하는 기업의 최초 재무제표 작성을 규정한다. 개시 재무상태표, 소급적용 원칙과 면제·예외규정을 다룬다.", "keywords": ["최초채택", "개시 재무상태표", "전환일", "소급적용 면제", "최초 재무제표"] },
+    { "no": "1102", "ifrs": "IFRS 2", "title": "주식기준보상", "category": "부채·비용", "summary": "주식결제형·현금결제형 주식기준보상거래의 회계처리를 규정한다. 부여일 공정가치, 가득조건, 보상원가 인식을 다룬다.", "keywords": ["주식기준보상", "주식결제형", "현금결제형", "주식선택권", "가득조건", "부여일 공정가치"] },
+    { "no": "1103", "ifrs": "IFRS 3", "title": "사업결합", "category": "연결·관계기업", "summary": "취득법에 따른 사업결합의 회계처리를 규정한다. 취득자 식별, 취득일, 식별가능한 자산·부채의 공정가치 측정, 영업권과 염가매수차익을 다룬다.", "keywords": ["사업결합", "취득법", "영업권", "염가매수차익", "취득일", "비지배지분", "공정가치"] },
+    { "no": "1105", "ifrs": "IFRS 5", "title": "매각예정비유동자산과 중단영업", "category": "자산", "summary": "매각예정으로 분류되는 비유동자산(처분자산집단)의 측정·표시와 중단영업의 표시를 규정한다. 순공정가치, 감가상각 중단을 다룬다.", "keywords": ["매각예정", "비유동자산", "처분자산집단", "중단영업", "순공정가치"] },
+    { "no": "1106", "ifrs": "IFRS 6", "title": "광물자원의 탐사와 평가", "category": "자산", "summary": "광물자원의 탐사·평가 지출의 인식과 측정, 탐사·평가자산의 손상을 규정한다.", "keywords": ["광물자원", "탐사평가자산", "탐사", "평가", "손상"] },
+    { "no": "1107", "ifrs": "IFRS 7", "title": "금융상품: 공시", "category": "금융상품", "summary": "금융상품이 재무상태와 성과에 미치는 영향, 노출되는 위험과 위험관리에 관한 공시를 규정한다. 신용위험·유동성위험·시장위험을 다룬다.", "keywords": ["금융상품 공시", "신용위험", "유동성위험", "시장위험", "위험관리", "공정가치 서열체계"] },
+    { "no": "1108", "ifrs": "IFRS 8", "title": "영업부문", "category": "재무제표 표시·공시", "summary": "영업부문 정보의 공시를 규정한다. 경영진접근법, 보고부문 식별, 부문 손익·자산 공시를 다룬다.", "keywords": ["영업부문", "보고부문", "경영진접근법", "부문 공시", "최고영업의사결정자"] },
+    { "no": "1109", "ifrs": "IFRS 9", "title": "금융상품", "category": "금융상품", "summary": "금융자산·금융부채의 분류와 측정, 기대신용손실에 따른 손상, 위험회피회계를 규정한다. 상각후원가·FVOCI·FVPL 분류, 12개월·전체기간 기대신용손실을 다룬다.", "keywords": ["금융상품", "금융자산 분류", "상각후원가", "FVOCI", "FVPL", "기대신용손실", "손상", "위험회피회계"] },
+    { "no": "1110", "ifrs": "IFRS 10", "title": "연결재무제표", "category": "연결·관계기업", "summary": "지배력에 근거한 연결재무제표의 작성과 표시를 규정한다. 지배력의 정의(힘·변동이익·연관), 연결절차, 비지배지분을 다룬다.", "keywords": ["연결재무제표", "지배력", "종속기업", "비지배지분", "연결절차", "투자기업"] },
+    { "no": "1111", "ifrs": "IFRS 11", "title": "공동약정", "category": "연결·관계기업", "summary": "공동약정의 분류(공동영업·공동기업)와 회계처리를 규정한다. 공동지배력, 공동영업자의 자산·부채 인식을 다룬다.", "keywords": ["공동약정", "공동영업", "공동기업", "공동지배력", "지분법"] },
+    { "no": "1112", "ifrs": "IFRS 12", "title": "타 기업에 대한 지분의 공시", "category": "재무제표 표시·공시", "summary": "종속기업·공동약정·관계기업·구조화기업에 대한 지분 공시를 규정한다. 지분의 성격과 위험, 재무적 영향 공시를 다룬다.", "keywords": ["지분 공시", "구조화기업", "종속기업", "관계기업", "비지배지분 공시"] },
+    { "no": "1113", "ifrs": "IFRS 13", "title": "공정가치 측정", "category": "기타", "summary": "공정가치의 정의와 측정 체계, 공시를 규정한다. 측정일의 질서있는 거래 가격, 평가기법, 공정가치 서열체계(수준1~3)를 다룬다.", "keywords": ["공정가치", "공정가치 서열체계", "수준1", "수준2", "수준3", "평가기법", "질서있는 거래"] },
+    { "no": "1114", "ifrs": "IFRS 14", "title": "규제이연계정", "category": "기타", "summary": "최초채택기업이 요금규제활동에서 생긴 규제이연계정 잔액을 종전 회계처리에 따라 계속 인식할 수 있도록 규정한다.", "keywords": ["규제이연계정", "요금규제활동", "최초채택"] },
+    { "no": "1115", "ifrs": "IFRS 15", "title": "고객과의 계약에서 생기는 수익", "category": "수익", "summary": "고객과의 계약에서 생기는 수익의 인식을 규정한다. 5단계 모형(계약 식별, 수행의무 식별, 거래가격 산정, 거래가격 배분, 수행의무 이행 시 수익인식)을 다룬다.", "keywords": ["수익인식", "5단계 모형", "수행의무", "거래가격", "계약", "변동대가", "한 시점·기간에 걸쳐 인식"] },
+    { "no": "1116", "ifrs": "IFRS 16", "title": "리스", "category": "자산", "summary": "리스의 인식·측정·표시·공시를 규정한다. 리스이용자는 사용권자산과 리스부채를 인식하고, 리스제공자는 금융리스·운용리스로 분류한다. 단기·소액 리스 면제를 다룬다.", "keywords": ["리스", "사용권자산", "리스부채", "리스이용자", "리스제공자", "금융리스", "운용리스", "단기리스"] },
+    { "no": "1117", "ifrs": "IFRS 17", "title": "보험계약", "category": "기타", "summary": "보험계약의 인식·측정·표시·공시를 규정한다. 일반모형(BBA), 보험료배분접근법(PAA), 보험계약마진(CSM), 이행현금흐름을 다룬다.", "keywords": ["보험계약", "일반모형", "보험료배분접근법", "보험계약마진", "CSM", "이행현금흐름"] }
+  ]
+}
+;</script>
+  <script>
+"use strict";
+
+/**
+ * KIFRS RAG 검색 — 클라이언트 사이드 검색 엔진
+ *
+ * 빌드 도구나 서버 없이 브라우저에서 동작한다.
+ *  1) corpus.json 을 불러와 각 기준서를 하나의 "문서"로 본다.
+ *  2) 한국어/영문/숫자에 맞춘 토크나이저로 색인을 만든다.
+ *  3) BM25 랭킹으로 질의와 가장 관련 높은 기준서를 정렬한다.
+ *  4) 일치 토큰을 스니펫에 하이라이트해 보여준다.
+ *
+ * "RAG"의 retrieval(검색) 단계를 순수 정적 환경에서 구현한 것이다.
+ * 생성(LLM) 단계는 검색된 근거를 LLM 프롬프트에 그대로 붙이면 된다.
+ */
+
+const KIFRS = (() => {
+  // --- 토크나이저 -----------------------------------------------------------
+  // 한국어는 형태소 분석기 없이도 쓸 수 있도록 음절 유니그램 + 바이그램을,
+  // 영문/숫자는 단어 단위 토큰을 만든다. 검색어와 문서가 같은 규칙을 쓴다.
+  const HANGUL = /[가-힣]/;
+
+  function tokenize(text) {
+    if (!text) return [];
+    const lowered = String(text).toLowerCase();
+    const tokens = [];
+    // 영문/숫자 토큰 (예: ias16, 1116, fvoci)
+    const wordRe = /[a-z0-9]+/g;
+    let m;
+    while ((m = wordRe.exec(lowered)) !== null) tokens.push(m[0]);
+    // 한글 음절 추출 후 유니그램 + 바이그램
+    const syllables = lowered.match(/[가-힣]+/g) || [];
+    for (const run of syllables) {
+      for (let i = 0; i < run.length; i++) {
+        tokens.push(run[i]); // 유니그램
+        if (i + 1 < run.length) tokens.push(run[i] + run[i + 1]); // 바이그램
+      }
+    }
+    return tokens;
+  }
+
+  // --- 색인 -----------------------------------------------------------------
+  const K1 = 1.5; // BM25 term frequency 포화 계수
+  const B = 0.75; // BM25 길이 정규화 계수
+
+  let docs = [];      // { ref, fields..., tokens, len, tf }
+  let df = new Map();  // token -> document frequency
+  let avgLen = 0;
+  let ready = false;
+
+  function buildDocText(s) {
+    // 검색 대상 필드를 하나로 합친다. 제목/요약/키워드/번호 가중치를 위해
+    // 제목·키워드는 반복 삽입해 비중을 높인다.
+    return [
+      s.no, s.no, s.ifrs,
+      s.title, s.title, s.title,
+      s.category,
+      (s.keywords || []).join(" "), (s.keywords || []).join(" "),
+      s.summary
+    ].join(" ");
+  }
+
+  function index(standards) {
+    docs = [];
+    df = new Map();
+    let totalLen = 0;
+
+    for (const s of standards) {
+      const tokens = tokenize(buildDocText(s));
+      const tf = new Map();
+      for (const t of tokens) tf.set(t, (tf.get(t) || 0) + 1);
+      for (const t of tf.keys()) df.set(t, (df.get(t) || 0) + 1);
+      totalLen += tokens.length;
+      docs.push({ ref: s, len: tokens.length, tf });
+    }
+    avgLen = docs.length ? totalLen / docs.length : 0;
+    ready = true;
+  }
+
+  // --- 검색 -----------------------------------------------------------------
+  function idf(token) {
+    const n = docs.length;
+    const dfi = df.get(token) || 0;
+    // BM25+ 형태로 음수 방지
+    return Math.log(1 + (n - dfi + 0.5) / (dfi + 0.5));
+  }
+
+  function search(query, limit = 10) {
+    if (!ready) return [];
+    const qTokens = tokenize(query);
+    if (qTokens.length === 0) return [];
+    const uniqueQ = [...new Set(qTokens)];
+
+    const scored = [];
+    for (const doc of docs) {
+      let score = 0;
+      let matched = 0;
+      for (const t of uniqueQ) {
+        const f = doc.tf.get(t) || 0;
+        if (f === 0) continue;
+        matched++;
+        const denom = f + K1 * (1 - B + B * (doc.len / (avgLen || 1)));
+        score += idf(t) * ((f * (K1 + 1)) / denom);
+      }
+      if (score > 0) scored.push({ doc, score, matched });
+    }
+
+    // 일치 토큰 수가 많을수록 우선, 그다음 BM25 점수
+    scored.sort((a, b) => b.matched - a.matched || b.score - a.score);
+    return scored.slice(0, limit).map((x) => ({
+      standard: x.doc.ref,
+      score: x.score,
+      matched: x.matched
+    }));
+  }
+
+  // 질의 토큰과 겹치는 부분을 <mark> 로 감싼다 (요약/제목 표시용).
+  function highlight(text, query) {
+    if (!text) return "";
+    const qSet = new Set(tokenize(query).filter((t) => t.length >= 1));
+    // 한글 바이그램/단어가 들어간 연속 구간을 강조하기 위해 어절 단위로 검사
+    const escape = (s) =>
+      s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    const parts = String(text).split(/(\s+)/);
+    return parts
+      .map((part) => {
+        if (/^\s+$/.test(part)) return part;
+        const lower = part.toLowerCase();
+        const hit =
+          qSet.has(lower) ||
+          [...qSet].some((q) => q.length >= 2 && lower.includes(q));
+        const safe = escape(part);
+        return hit ? `<mark>${safe}</mark>` : safe;
+      })
+      .join("");
+  }
+
+  async function load(url = "corpus.json") {
+    // standalone(단일 파일) 모드: 데이터가 페이지에 내장돼 있으면 fetch 없이 사용.
+    // → file:// 로 더블클릭해도 동작하고, 인터넷/서버가 필요 없다.
+    if (typeof window !== "undefined" && window.__KIFRS_CORPUS__) {
+      const data = window.__KIFRS_CORPUS__;
+      index(data.standards || []);
+      return data;
+    }
+    const res = await fetch(url, { cache: "no-cache" });
+    if (!res.ok) throw new Error(`corpus 로드 실패: HTTP ${res.status}`);
+    const data = await res.json();
+    index(data.standards || []);
+    return data;
+  }
+
+  return { load, index, search, highlight, tokenize, get count() { return docs.length; } };
+})();
+
+// --- UI 연결 ----------------------------------------------------------------
+(() => {
+  const $ = (sel) => document.querySelector(sel);
+  const input = $("#q");
+  const results = $("#results");
+  const status = $("#status");
+  const meta = $("#corpus-meta");
+  let meta_data = null;
+
+  function render(query) {
+    const q = query.trim();
+    if (!q) {
+      results.innerHTML = "";
+      status.textContent = `${KIFRS.count}개 기준서가 색인되어 있습니다. 검색어를 입력하세요.`;
+      return;
+    }
+    const hits = KIFRS.search(q, 12);
+    if (hits.length === 0) {
+      results.innerHTML = "";
+      status.textContent = `"${q}" 와 일치하는 기준서를 찾지 못했습니다.`;
+      return;
+    }
+    status.textContent = `"${q}" — ${hits.length}건`;
+    results.innerHTML = hits
+      .map(({ standard: s, score, matched }) => {
+        const title = KIFRS.highlight(s.title, q);
+        const summary = KIFRS.highlight(s.summary, q);
+        const kws = (s.keywords || [])
+          .map((k) => `<span class="kw">${KIFRS.highlight(k, q)}</span>`)
+          .join("");
+        return `
+          <li class="result">
+            <div class="result-head">
+              <span class="badge">제${s.no}호</span>
+              <span class="ifrs">${s.ifrs}</span>
+              <span class="cat">${s.category}</span>
+              <span class="score" title="BM25 점수 / 일치 토큰">${score.toFixed(2)} · ${matched}match</span>
+            </div>
+            <h3>${title}</h3>
+            <p>${summary}</p>
+            <div class="kws">${kws}</div>
+          </li>`;
+      })
+      .join("");
+  }
+
+  KIFRS.load()
+    .then((data) => {
+      meta_data = data;
+      if (meta) {
+        meta.textContent = `데이터: ${data.source} · 버전 ${data.version} · ${KIFRS.count}개 기준서`;
+      }
+      render(input.value);
+      input.focus();
+    })
+    .catch((err) => {
+      status.textContent = `색인을 불러오지 못했습니다. ${err.message} (file:// 로 직접 열면 fetch가 막힐 수 있습니다. 정적 서버로 띄우세요.)`;
+    });
+
+  let t;
+  input.addEventListener("input", () => {
+    clearTimeout(t);
+    t = setTimeout(() => render(input.value), 80);
+  });
+
+  // 예시 칩 클릭
+  document.addEventListener("click", (e) => {
+    const chip = e.target.closest("[data-q]");
+    if (!chip) return;
+    input.value = chip.getAttribute("data-q");
+    render(input.value);
+    input.focus();
+  });
+})();
+
+  </script>
+</body>
+</html>

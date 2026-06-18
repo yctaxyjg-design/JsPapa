@@ -41,6 +41,30 @@ python3 -m http.server 8000
 # → http://localhost:8000
 ```
 
+## 다른 PC(회사 윈도우 등)에서 나 혼자 쓰기 — 설치·서버 없이
+
+`kifrs-standalone.html` **한 파일**에 데이터·검색엔진·스타일이 모두 들어 있습니다.
+인터넷·파이썬·노드·서버가 필요 없고, **더블클릭하면 브라우저에서 바로** 열립니다.
+잠긴 회사 PC에서 개인용으로 쓰기에 적합합니다(배포 아님).
+
+가져가는 방법(아무거나):
+
+1. **GitHub에서 내려받기** — 저장소의 `kifrs/kifrs-standalone.html`을 열고 `Download raw file`.
+   회사 PC에서 GitHub 접근이 막혀 있으면 아래 방법을 쓰세요.
+2. **나에게 메일/메신저로 첨부** 또는 **USB 복사** — 파일 하나만 옮기면 됩니다.
+3. 옮긴 뒤 파일을 **더블클릭** → 기본 브라우저(Chrome/Edge 등)에서 검색 동작.
+
+> 오프라인으로 동작합니다. 즐겨찾기에 추가하면 바로 열 수 있습니다.
+
+### 직접 다시 만들기
+
+내용(corpus)이나 UI를 바꾼 뒤 단일 파일을 새로 만들려면 (Node 필요):
+
+```sh
+cd kifrs
+node build/bundle.js     # → kifrs-standalone.html 재생성
+```
+
 ## 전문 RAG로 확장
 
 배포 환경(Claude Code on the web)은 아웃바운드 네트워크가 차단되어 세션 안에서

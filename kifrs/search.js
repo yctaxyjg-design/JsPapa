@@ -135,6 +135,13 @@ const KIFRS = (() => {
   }
 
   async function load(url = "corpus.json") {
+    // standalone(단일 파일) 모드: 데이터가 페이지에 내장돼 있으면 fetch 없이 사용.
+    // → file:// 로 더블클릭해도 동작하고, 인터넷/서버가 필요 없다.
+    if (typeof window !== "undefined" && window.__KIFRS_CORPUS__) {
+      const data = window.__KIFRS_CORPUS__;
+      index(data.standards || []);
+      return data;
+    }
     const res = await fetch(url, { cache: "no-cache" });
     if (!res.ok) throw new Error(`corpus 로드 실패: HTTP ${res.status}`);
     const data = await res.json();
