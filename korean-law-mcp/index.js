@@ -3,21 +3,22 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import { z } from "zod";
 
-const OC = process.env.OC || "";
+const OC = process.env.OC || process.env.LAW_OC || "";
 const PORT = process.env.PORT || 8080;
 const LAW_API = "http://www.law.go.kr/DRF";
 
+// 법제처 API 호출 — XML 포맷 사용 (JSON 엔드포인트 불안정)
 async function callLawApi(path, params) {
-  if (!OC) throw new Error("OC 환경변수가 설정되지 않았습니다.");
+  if (!OC) throw new Error("OC(또는 LAW_OC) 환경변수가 설정되지 않았습니다.");
   const url = new URL(`${LAW_API}/${path}`);
   url.searchParams.set("OC", OC);
-  url.searchParams.set("type", "JSON");
+  url.searchParams.set("type", "XML");
   for (const [k, v] of Object.entries(params)) {
     if (v !== undefined && v !== "") url.searchParams.set(k, v);
   }
   const res = await fetch(url.toString());
   if (!res.ok) throw new Error(`법제처 API HTTP ${res.status}`);
-  return res.json();
+  return res.text();
 }
 
 function createServer() {
@@ -36,7 +37,7 @@ function createServer() {
     },
     async ({ query, page, display }) => {
       const data = await callLawApi("lawSearch.do", { target: "law", query, page, display });
-      return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
+      return { content: [{ type: "text", text: data }] };
     }
   );
 
@@ -50,7 +51,7 @@ function createServer() {
     async ({ id, name }) => {
       const params = id ? { ID: id } : { name };
       const data = await callLawApi("lawService.do", params);
-      return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
+      return { content: [{ type: "text", text: data }] };
     }
   );
 
@@ -64,7 +65,7 @@ function createServer() {
     },
     async ({ query, page, display }) => {
       const data = await callLawApi("lawSearch.do", { target: "prec", query, page, display });
-      return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
+      return { content: [{ type: "text", text: data }] };
     }
   );
 
@@ -78,7 +79,7 @@ function createServer() {
     },
     async ({ query, page, display }) => {
       const data = await callLawApi("lawSearch.do", { target: "ordin", query, page, display });
-      return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }] };
+      return { content: [{ type: "text", text: data }] };
     }
   );
 
