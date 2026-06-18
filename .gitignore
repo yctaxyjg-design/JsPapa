@@ -26,3 +26,7 @@ TestResults.xml
 economist/out/
 # Local Claude Code settings overrides (machine-specific)
 .claude/settings.local.json
+
+### FT Edit scheduler ###
+# Generated daily analyses (personal, never commit)
+ft-edit/out/
