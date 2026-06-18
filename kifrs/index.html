@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KIFRS 검색 — 한국채택국제회계기준</title>
+  <meta name="description" content="한국채택국제회계기준(K-IFRS) 기업회계기준서를 브라우저에서 검색하는 정적 RAG 검색 앱" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="stylesheet" href="kifrs.css" />
+</head>
+<body>
+  <header class="hero">
+    <h1>KIFRS 검색</h1>
+    <p class="subtitle">한국채택국제회계기준(K-IFRS) 기업회계기준서 검색</p>
+  </header>
+
+  <main>
+    <div class="notice">
+      <h2>안내</h2>
+      <p>
+        이 검색은 기준서 <strong>색인(번호·제목·대응 IFRS·요약·키워드)</strong>을 대상으로 합니다.
+        기준서 <strong>전문(全文)</strong>은 한국회계기준원에 저작권이 있어 포함하지 않았습니다.
+        전문 RAG로 확장하려면 <code>build/</code> 안내를 참고하세요.
+      </p>
+    </div>
+
+    <section class="card search-card">
+      <div class="search-box">
+        <input id="q" type="text" placeholder="예: 리스, 수익인식, 손상, 1116, 금융상품…" autocomplete="off" autofocus />
+      </div>
+      <div class="chips">
+        <button class="chip" data-q="리스 사용권자산">리스</button>
+        <button class="chip" data-q="수익인식 5단계">수익인식</button>
+        <button class="chip" data-q="자산손상 회수가능액">손상</button>
+        <button class="chip" data-q="금융상품 기대신용손실">금융상품</button>
+        <button class="chip" data-q="연결재무제표 지배력">연결</button>
+        <button class="chip" data-q="이연법인세 일시적차이">법인세</button>
+        <button class="chip" data-q="1116">1116호</button>
+      </div>
+      <p id="status" class="status">색인을 불러오는 중…</p>
+    </section>
+
+    <ul id="results" class="results"></ul>
+
+    <p id="corpus-meta" class="corpus-meta"></p>
+  </main>
+
+  <footer>
+    <p>K-IFRS 기준서 색인 · 클라이언트 사이드 BM25 검색 · 서버 없음</p>
+  </footer>
+
+  <script src="search.js"></script>
+</body>
+</html>

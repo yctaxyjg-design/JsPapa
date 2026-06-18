@@ -26,3 +26,11 @@ TestResults.xml
 economist/out/
 # Local Claude Code settings overrides (machine-specific)
 .claude/settings.local.json
+
+### KIFRS search ###
+# Full-text standards (copyright KASB) and the enriched corpus must not be committed
+kifrs/raw/
+kifrs/corpus.full.json
+# Python bytecode
+__pycache__/
+*.pyc
