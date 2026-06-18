@@ -1,0 +1,14 @@
+{
+  "name": "korean-law-mcp",
+  "version": "1.0.0",
+  "description": "법제처 OpenAPI MCP 서버",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "express": "^5.2.1"
+  }
+}
