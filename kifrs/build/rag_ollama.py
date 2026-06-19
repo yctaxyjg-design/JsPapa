@@ -222,6 +222,29 @@ def build_context(hits):
     return "\n\n".join(blocks)
 
 
+def format_result(query, reply, hits, retrieve_only):
+    """다른 프로그램/로컬 AI가 그대로 파싱할 수 있는 구조화 출력."""
+    result = {
+        "query": query,
+        "retrieve_only": bool(retrieve_only),
+        "sources": [f"제{d['no']}호" for _, d in hits],
+        "hits": [
+            {
+                "id": d["id"],
+                "no": d["no"],
+                "title": d["title"],
+                "ifrs": d["ifrs"],
+                "score": round(score, 4),
+                "text": d["text"],
+            }
+            for score, d in hits
+        ],
+    }
+    # 검색 전용이면 reply 는 context 문자열이므로 answer 키를 비운다.
+    result["answer"] = None if retrieve_only else reply
+    return result
+
+
 def answer(index, query, args):
     hits = retrieve(index, query, args.host, args.embed_model, args.top_k)
     context = build_context(hits)
@@ -248,6 +271,7 @@ def main():
     ap.add_argument("--build", action="store_true", help="색인을 강제로 다시 빌드")
     ap.add_argument("--ask", help="단발 질의")
     ap.add_argument("--retrieve-only", action="store_true", help="LLM 없이 검색 근거만 출력")
+    ap.add_argument("--json", action="store_true", help="결과를 JSON으로 출력(다른 프로그램/AI 연동용)")
     ap.add_argument("--selftest", action="store_true", help="Ollama 연결/모델 점검")
     args = ap.parse_args()
     args.corpus = os.path.abspath(args.corpus)
@@ -266,8 +290,11 @@ def main():
 
     if args.ask:
         reply, hits = answer(index, args.ask, args)
-        print(reply)
-        print("\n— 사용 근거:", ", ".join(f"제{d['no']}호" for _, d in hits), file=sys.stderr)
+        if args.json:
+            print(json.dumps(format_result(args.ask, reply, hits, args.retrieve_only), ensure_ascii=False, indent=2))
+        else:
+            print(reply)
+            print("\n— 사용 근거:", ", ".join(f"제{d['no']}호" for _, d in hits), file=sys.stderr)
         return 0
 
     # 대화형

@@ -64,7 +64,13 @@ python build/rag_ollama.py --ask "리스 사용권자산 최초측정은?"
 python build/rag_ollama.py
 # 검색 근거만(LLM 없이)
 python build/rag_ollama.py --retrieve-only --ask "이연법인세 일시적차이"
+# 다른 프로그램/로컬 AI 연동용 JSON 출력
+python build/rag_ollama.py --json --ask "리스 사용권자산 최초측정은?"
+python build/rag_ollama.py --json --retrieve-only --ask "이연법인세 일시적차이"
 ```
+
+`--json` 출력 스키마: `{ query, retrieve_only, answer, sources:[...], hits:[{id,no,title,ifrs,score,text}] }`
+(`--retrieve-only`면 `answer`는 `null`, `hits`만 채워짐).
 
 모델 태그가 다르면 환경변수나 인자로 바꿉니다:
 
