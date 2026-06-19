@@ -37,3 +37,6 @@ kifrs/build/.kifrs_embed_cache.json
 # Python bytecode
 __pycache__/
 *.pyc
+
+# Build artifacts (binary, regenerable)
+kifrs/*.zip

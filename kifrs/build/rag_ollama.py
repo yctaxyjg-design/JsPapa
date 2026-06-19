@@ -51,6 +51,10 @@ DEFAULT_HOST = os.environ.get("OLLAMA_HOST", "http://localhost:11434")
 DEFAULT_EMBED_MODEL = os.environ.get("KIFRS_EMBED_MODEL", "bge-m3:latest")
 DEFAULT_LLM_MODEL = os.environ.get("KIFRS_LLM_MODEL", "qwen3.6:35b-a3b")
 
+# 단일 파일(standalone) 빌드 시 corpus.json 내용이 여기에 주입된다.
+# 값이 있으면 corpus 파일이 없어도 이 데이터로 동작한다(파일 하나만 옮기면 됨).
+EMBEDDED_CORPUS = None
+
 SYSTEM_PROMPT = (
     "당신은 한국채택국제회계기준(K-IFRS) 전문 보좌역이다. "
     "아래 [근거]로 제공된 기준서 발췌만을 사실 출처로 삼아 한국어로 답하라. "
@@ -120,8 +124,16 @@ def load_documents(corpus_path):
     각 기준서에 chunks(전문 청크)가 있으면 청크마다 문서를 만들고,
     없으면 색인 요약(제목+요약+키워드)을 한 문서로 만든다.
     """
-    with open(corpus_path, encoding="utf-8") as f:
-        data = json.load(f)
+    if os.path.exists(corpus_path):
+        with open(corpus_path, encoding="utf-8") as f:
+            data = json.load(f)
+    elif EMBEDDED_CORPUS is not None:
+        data = EMBEDDED_CORPUS  # 단일 파일 모드: 내장 corpus 사용
+    else:
+        raise FileNotFoundError(
+            f"corpus 를 찾을 수 없습니다: {corpus_path}\n"
+            "  → --corpus 로 경로를 지정하거나, 내장형 단일 파일(kifrs_rag_standalone.py)을 쓰세요."
+        )
     docs = []
     for s in data.get("standards", []):
         head = f"제{s['no']}호 {s['title']} ({s.get('ifrs','')})"
