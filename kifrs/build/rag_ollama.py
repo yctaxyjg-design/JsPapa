@@ -272,6 +272,7 @@ def main():
     ap.add_argument("--ask", help="단발 질의")
     ap.add_argument("--retrieve-only", action="store_true", help="LLM 없이 검색 근거만 출력")
     ap.add_argument("--json", action="store_true", help="결과를 JSON으로 출력(다른 프로그램/AI 연동용)")
+    ap.add_argument("--batch", help="질문이 줄단위로 든 파일 경로('-'면 표준입력). JSON 배열로 일괄 출력")
     ap.add_argument("--selftest", action="store_true", help="Ollama 연결/모델 점검")
     args = ap.parse_args()
     args.corpus = os.path.abspath(args.corpus)
@@ -284,6 +285,18 @@ def main():
     except urllib.error.URLError as e:
         print(f"[오류] Ollama 접속 실패({args.host}): {e}\n  → 'ollama serve' 실행 여부와 --host 를 확인하세요.", file=sys.stderr)
         return 2
+
+    if args.batch:
+        src = sys.stdin if args.batch == "-" else open(args.batch, encoding="utf-8")
+        questions = [ln.strip() for ln in src if ln.strip()]
+        if src is not sys.stdin:
+            src.close()
+        results = []
+        for q in questions:
+            reply, hits = answer(index, q, args)
+            results.append(format_result(q, reply, hits, args.retrieve_only))
+        print(json.dumps(results, ensure_ascii=False, indent=2))
+        return 0
 
     if args.build and not args.ask:
         return 0
