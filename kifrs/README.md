@@ -41,6 +41,42 @@ python3 -m http.server 8000
 # → http://localhost:8000
 ```
 
+## 로컬 Ollama RAG 브리지 (bge-m3 + qwen3)
+
+`build/rag_ollama.py`는 corpus를 **bge-m3로 임베딩**해 로컬 벡터 검색을 하고,
+검색 근거를 **qwen3 LLM**에 주입해 한국어로 답합니다. 실무(세무조정)·수험(회계학)
+맥락에 맞춘 시스템 프롬프트를 씁니다.
+
+- **의존성 없음**: 표준 라이브러리(urllib)만 사용 → `pip install` 불필요.
+- **전부 로컬·오프라인**: Ollama(`localhost:11434`)에만 접속, 외부 전송 없음.
+- **임베딩 캐시**: 같은 텍스트는 재임베딩하지 않음.
+- **경로 하드코딩 없음**: `--corpus` 인자로 받고, 기본값은 스크립트 옆 `../corpus.json`.
+
+```sh
+cd kifrs
+# 0) 연결/모델 점검
+python build/rag_ollama.py --selftest
+# 1) 색인 빌드(최초 1회, corpus 변경 시 --build)
+python build/rag_ollama.py --build
+# 2) 질의
+python build/rag_ollama.py --ask "리스 사용권자산 최초측정은?"
+# 대화형
+python build/rag_ollama.py
+# 검색 근거만(LLM 없이)
+python build/rag_ollama.py --retrieve-only --ask "이연법인세 일시적차이"
+```
+
+모델 태그가 다르면 환경변수나 인자로 바꿉니다:
+
+```sh
+python build/rag_ollama.py --embed-model bge-m3:latest --llm-model qwen3.6:35b-a3b
+# 또는: export KIFRS_EMBED_MODEL=... KIFRS_LLM_MODEL=... OLLAMA_HOST=http://localhost:11434
+```
+
+> 색인 품질은 corpus 내용에 비례합니다. 지금은 색인(요약)만 임베딩하므로,
+> 전문(全文) 답변이 필요하면 위 "전문 RAG로 확장"으로 `corpus.full.json`을 만든 뒤
+> `--corpus corpus.full.json --build` 하면 청크 단위로 임베딩·검색합니다.
+
 ## 다른 PC(회사 윈도우 등)에서 나 혼자 쓰기 — 설치·서버 없이
 
 `kifrs-standalone.html` **한 파일**에 데이터·검색엔진·스타일이 모두 들어 있습니다.
