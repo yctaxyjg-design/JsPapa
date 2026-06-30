@@ -41,6 +41,7 @@ import hashlib
 import json
 import math
 import os
+import re
 import sys
 import urllib.error
 import urllib.request
@@ -245,13 +246,22 @@ def embed_texts(texts, host, model):
     return vecs
 
 
+def _strip_think(text):
+    """추론형 모델(qwq 등)이 붙이는 <think>...</think> 사고과정 블록을 제거한다."""
+    cleaned = re.sub(r"<think>.*?</think>", "", text, flags=re.DOTALL)
+    # 닫는 태그가 없는 경우(스트림 잘림 등) 마지막 </think>까지 남은 머리부분도 정리
+    if "</think>" in cleaned:
+        cleaned = cleaned.split("</think>", 1)[1]
+    return cleaned.strip()
+
+
 def chat(messages, host, model, timeout=600):
     out = _post_json(
         f"{host}/api/chat",
         {"model": model, "messages": messages, "stream": False},
         timeout=timeout,
     )
-    return out["message"]["content"]
+    return _strip_think(out["message"]["content"])
 
 
 # --- 벡터 연산 (pure python) -------------------------------------------------
