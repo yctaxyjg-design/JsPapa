@@ -15,11 +15,15 @@
 - 모델: 임베딩 `bge-m3:latest`, LLM 너 자신(qwen 계열). Ollama `localhost:11434`.
 - 코퍼스: `kifrs/corpus.json` — K-IFRS 기업회계기준서 색인(요약+키워드), 일부 기준서는
   세부 청크로 보강됨. 현재 색인 약 124개 문서.
-- 명령:
-  - 점검: `python build/rag_ollama.py --selftest`
-  - 색인: `python build/rag_ollama.py --build`  (corpus 변경 시 git pull 후 재실행)
-  - 근거검색(권장): `python build/rag_ollama.py --retrieve-only --json 2>/dev/null --ask "질문" --top-k 8`
-  - MCP 도구: `python build/mcp_server.py` (`kifrs_search`, `kifrs_answer`)
+- 명령(**macOS는 `python`이 아니라 `python3`**):
+  - 점검: `python3 build/rag_ollama.py --selftest`
+  - 색인: `python3 build/rag_ollama.py --build`  (corpus 변경 시 git pull 후 재실행)
+  - 근거검색(권장): `python3 build/rag_ollama.py --retrieve-only --json 2>/dev/null --ask "질문" --top-k 8`
+  - MCP 도구: `python3 build/mcp_server.py` (`kifrs_search`, `kifrs_answer`)
+- **모델 설정 주의(중요)**: LLM 기본값 이름이 이 기기에 없으면 호출이 실패한다.
+  반드시 `ollama list`로 **설치된 모델명**을 확인하고 `KIFRS_LLM_MODEL`로 지정하라.
+  예: `KIFRS_LLM_MODEL=qwq:32b python3 build/rag_ollama.py --selftest`.
+  `--retrieve-only`는 임베딩(bge-m3)만 쓰므로 LLM 모델이 없어도 동작한다.
 
 ## 3. 운영 원칙 (역할 분담)
 1. 답하기 전 **`--retrieve-only --json`** 으로 관련 기준서 근거(hits)를 먼저 확보한다.
