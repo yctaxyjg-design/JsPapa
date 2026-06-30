@@ -286,6 +286,7 @@ def main():
     ap.add_argument("--json", action="store_true", help="결과를 JSON으로 출력(다른 프로그램/AI 연동용)")
     ap.add_argument("--batch", help="질문이 줄단위로 든 파일 경로('-'면 표준입력). JSON 배열로 일괄 출력")
     ap.add_argument("--selftest", action="store_true", help="Ollama 연결/모델 점검")
+    ap.add_argument("--make-prompt", action="store_true", help="LLM 호출 없이 '근거가 박힌 완성 프롬프트'를 출력(어떤 답변 모델에든 붙여넣기용)")
     args = ap.parse_args()
     args.corpus = os.path.abspath(args.corpus)
 
@@ -311,6 +312,17 @@ def main():
         return 0
 
     if args.build and not args.ask:
+        return 0
+
+    if args.make_prompt:
+        if not args.ask:
+            print("[오류] --make-prompt 는 --ask \"질문\" 과 함께 쓰세요.", file=sys.stderr)
+            return 2
+        hits = retrieve(index, args.ask, args.host, args.embed_model, args.top_k)
+        context = build_context(hits)
+        # 어떤 답변 모델에든 붙여넣을 수 있는 완성 프롬프트(시스템 지침 + 근거 + 질문)
+        print(f"{SYSTEM_PROMPT}\n\n[근거]\n{context}\n\n[질문]\n{args.ask}")
+        print("— 사용 근거:", ", ".join(f"제{d['no']}호" for _, d in hits), file=sys.stderr)
         return 0
 
     if args.ask:
