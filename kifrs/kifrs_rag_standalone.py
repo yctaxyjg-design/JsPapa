@@ -247,11 +247,16 @@ def embed_texts(texts, host, model):
 
 
 def _strip_think(text):
-    """추론형 모델(qwq 등)이 붙이는 <think>...</think> 사고과정 블록을 제거한다."""
+    """추론형 모델의 사고과정 블록을 제거한다.
+    - qwq 등: <think>...</think>
+    - qwen3 등: 'Thinking...' ... '...done thinking.'
+    """
     cleaned = re.sub(r"<think>.*?</think>", "", text, flags=re.DOTALL)
-    # 닫는 태그가 없는 경우(스트림 잘림 등) 마지막 </think>까지 남은 머리부분도 정리
-    if "</think>" in cleaned:
-        cleaned = cleaned.split("</think>", 1)[1]
+    cleaned = re.sub(r"Thinking\.\.\..*?\.\.\.done thinking\.", "", cleaned, flags=re.DOTALL)
+    # 닫는 표지만 남은 경우(스트림 잘림 등) 그 뒤 본문만 취한다
+    for marker in ("</think>", "...done thinking."):
+        if marker in cleaned:
+            cleaned = cleaned.split(marker, 1)[1]
     return cleaned.strip()
 
 
