@@ -26,3 +26,17 @@ TestResults.xml
 economist/out/
 # Local Claude Code settings overrides (machine-specific)
 .claude/settings.local.json
+
+### KIFRS search ###
+# Full-text standards (copyright KASB) and the enriched corpus must not be committed
+kifrs/raw/
+kifrs/corpus.full.json
+# Local RAG index / embedding cache (machine-local, regenerable)
+kifrs/build/.kifrs_index.json
+kifrs/build/.kifrs_embed_cache.json
+# Python bytecode
+__pycache__/
+*.pyc
+
+# Build artifacts (binary, regenerable)
+kifrs/*.zip
