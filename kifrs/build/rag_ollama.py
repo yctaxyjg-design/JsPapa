@@ -50,7 +50,9 @@ DEFAULT_CACHE = os.path.join(HERE, ".kifrs_embed_cache.json")  # 텍스트→벡
 
 DEFAULT_HOST = os.environ.get("OLLAMA_HOST", "http://localhost:11434")
 DEFAULT_EMBED_MODEL = os.environ.get("KIFRS_EMBED_MODEL", "bge-m3:latest")
-DEFAULT_LLM_MODEL = os.environ.get("KIFRS_LLM_MODEL", "qwen3.6:35b-a3b")
+# 기본 LLM은 KIFRS_LLM_MODEL 로 덮어쓸 수 있다. 이 이름이 `ollama list`에 없으면
+# 호출이 실패하므로, 설치된 모델명으로 지정할 것.
+DEFAULT_LLM_MODEL = os.environ.get("KIFRS_LLM_MODEL", "qwen3:30b")
 
 # 단일 파일(standalone) 빌드 시 corpus.json 내용이 여기에 주입된다.
 # 값이 있으면 corpus 파일이 없어도 이 데이터로 동작한다(파일 하나만 옮기면 됨).

@@ -12,7 +12,8 @@
 
 ## 2. 환경과 도구 (로컬 Ollama RAG)
 - 코드 위치(레포): `JsPapa/kifrs/`. 로컬 작업 경로 예: `.../JsPapa/kifrs/build/rag_ollama.py`
-- 모델: 임베딩 `bge-m3:latest`, LLM 너 자신(qwen 계열). Ollama `localhost:11434`.
+- 모델: 임베딩 `bge-m3:latest`, LLM `qwen3:30b`(권장, `/no_think`로 사고과정 생략 가능)
+  또는 `qwq:32b`. Ollama `localhost:11434`. 반드시 `ollama list`의 설치 모델명을 쓴다.
 - 코퍼스: `kifrs/corpus.json` — K-IFRS 기업회계기준서 색인(요약+키워드), 일부 기준서는
   세부 청크로 보강됨. 현재 색인 약 124개 문서.
 - 명령(**macOS는 `python`이 아니라 `python3`**):
