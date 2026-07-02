@@ -1,0 +1,46 @@
+{
+  "pollMinutes": 5,
+  "messagesPerAccount": 30,
+  "accounts": [
+    {
+      "id": "gmail",
+      "label": "Gmail",
+      "color": "#ea4335",
+      "host": "imap.gmail.com",
+      "port": 993,
+      "secure": true,
+      "user": "you@gmail.com",
+      "pass": "구글 계정 → 보안 → 2단계 인증 → 앱 비밀번호에서 발급한 16자리"
+    },
+    {
+      "id": "naver",
+      "label": "네이버",
+      "color": "#03c75a",
+      "host": "imap.naver.com",
+      "port": 993,
+      "secure": true,
+      "user": "you@naver.com",
+      "pass": "네이버 메일 → 환경설정 → IMAP/SMTP 사용 켠 뒤 계정 비밀번호(2단계 인증 시 애플리케이션 비밀번호)"
+    },
+    {
+      "id": "daum",
+      "label": "다음",
+      "color": "#326edc",
+      "host": "imap.daum.net",
+      "port": 993,
+      "secure": true,
+      "user": "you@daum.net",
+      "pass": "Daum 메일 → 환경설정 → IMAP/POP3 → IMAP 사용 설정 후 비밀번호"
+    },
+    {
+      "id": "outlook",
+      "label": "Outlook",
+      "color": "#0078d4",
+      "host": "outlook.office365.com",
+      "port": 993,
+      "secure": true,
+      "user": "you@outlook.com",
+      "pass": "Microsoft 계정 → 보안 → 앱 비밀번호"
+    }
+  ]
+}
