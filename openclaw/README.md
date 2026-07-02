@@ -35,7 +35,13 @@
 
 ### 1) 원클릭 스크립트 (이 레포 제공)
 
-맥미니에서:
+맥미니 터미널에서 레포 체크아웃 없이 바로 실행 (🥇 Qwen3.6-35B-A3B로 교체):
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/yctaxyjg-design/JsPapa/main/openclaw/switch-brain.sh | bash -s qwen-moe
+```
+
+또는 레포를 받아서:
 
 ```bash
 git pull
