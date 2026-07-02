@@ -26,3 +26,9 @@ TestResults.xml
 economist/out/
 # Local Claude Code settings overrides (machine-specific)
 .claude/settings.local.json
+
+### Mail aggregator ###
+# Real account credentials — never commit
+mail-aggregator/accounts.json
+mail-aggregator/node_modules/
+mail-aggregator/package-lock.json

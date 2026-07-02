@@ -1,0 +1,18 @@
+{
+  "name": "mail-aggregator",
+  "version": "1.0.0",
+  "description": "여러 메일 계정(IMAP)을 모아 주기적으로 보여주는 통합 메일함",
+  "main": "server.js",
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "demo": "MAIL_DEMO=1 node server.js"
+  },
+  "dependencies": {
+    "express": "^5.2.1",
+    "imapflow": "^1.0.199"
+  }
+}

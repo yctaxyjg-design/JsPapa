@@ -1,3 +1,14 @@
+# JsPapa
+
+여러 개의 작은 프로젝트를 모아둔 저장소입니다.
+
+- **iPad 전원 스케줄러** (루트, 아래 설명) — 정적 웹앱
+- **[통합 메일함](mail-aggregator/)** (`mail-aggregator/`) — 여러 메일 계정(IMAP)을 모아 주기적으로 보여주는 로컬 웹앱
+- **Korean Law MCP** (`korean-law-mcp/`) — 법제처 OpenAPI MCP 서버
+- **Economist 주간 분석** (`economist/`, `scripts/economist/`) — 주간판 분석 스케줄러
+
+---
+
 # iPad 전원 스케줄러
 
 iPad의 전원을 시간대별로 켜고/끄는 일정을 관리하고, 그 일정을 iOS 단축어(Shortcuts) 오토메이션으로 설정하는 방법을 안내해주는 정적 웹앱입니다.
