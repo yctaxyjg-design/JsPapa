@@ -73,6 +73,25 @@ git pull
 - **KV 캐시 양자화**(LM Studio 설정에서 8bit)로 긴 컨텍스트 메모리 절약.
 - MoE 모델은 대역폭 병목이 작아 M4 Pro(273GB/s)에서 dense 대비 3–5배 빠릅니다. 속도가 답답하면 무조건 MoE.
 
+## 이미지 생성 붙이기 (ComfyUI + Civitai 모델)
+
+OpenClaw의 공식 ComfyUI 연동(comfy 스킬)을 쓰면 오픈클로가 자연어로 로컬 이미지 생성을 합니다.
+Civitai는 설치하는 프로그램이 아니라 모델 공유 사이트로, 받은 체크포인트/LoRA를
+`~/ComfyUI/models/checkpoints/`(또는 `loras/`)에 넣으면 사용 가능합니다.
+
+```bash
+./openclaw/setup-image-gen.sh                     # ComfyUI 설치 + SDXL 기본 모델 + OpenClaw 연동
+./openclaw/setup-image-gen.sh --no-model --civitai <버전ID>   # Civitai 모델로 시작
+```
+
+완료 후 `~/ComfyUI/start.sh`로 서버를 켜고 `openclaw gateway restart` 하면
+"~그림 그려줘"에 오픈클로가 ComfyUI API(`http://127.0.0.1:8188`)를 호출합니다.
+기본 워크플로는 [`comfyui-workflow-t2i.json`](./comfyui-workflow-t2i.json)
+(프롬프트 노드 `6`, 출력 노드 `9`)이며 Civitai 모델을 쓰려면 `ckpt_name`만 바꾸면 됩니다.
+
+- 48GB에서 LLM(Qwen3.6-35B-A3B ~20GB) + SDXL(~7GB) 동시 상주 가능. Flux Dev(~16GB)는 이미지 생성 시에만 로드 권장.
+- 손으로 빠르게 뽑을 땐 앱스토어의 **Draw Things**(무료, 애플 실리콘 최적화로 ComfyUI보다 20%~3배 빠름)가 편하지만, 오픈클로 연동은 ComfyUI가 공식 지원이라 매끄럽습니다.
+
 ## 참고 자료
 
 - [OpenClaw 공식: Local models](https://docs.openclaw.ai/gateway/local-models) · [Ollama provider](https://docs.openclaw.ai/providers/ollama) · [LM Studio provider](https://docs.openclaw.ai/providers/lmstudio)
