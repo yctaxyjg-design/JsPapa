@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>문자 자동 답장 설정 · 단축어 자동화 가이드</title>
+<link rel="stylesheet" href="../styles.css" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<header class="hero">
+  <h1>특정인 문자 자동 답장</h1>
+  <p class="subtitle">지정한 사람의 iMessage/SMS에 내가 정한 말투와 분위기로 자동 답장하도록 단축어 오토메이션을 설정하세요.</p>
+  <nav class="tools"><a href="../index.html">← iPad 전원 스케줄러</a></nav>
+</header>
+
+<main>
+  <section class="notice">
+    <h2>먼저 알아두세요</h2>
+    <p>
+      iOS 정책상 <strong>모든 문자에 대한 무제한 자동응답은 불가능</strong>하고,
+      단축어 오토메이션의 "메시지" 트리거로 <strong>미리 지정한 사람</strong>에게만 자동 답장할 수 있습니다.
+      답장 생성에는 Claude API가 사용되므로 <strong>Anthropic API 키</strong>가 필요하며(사용량만큼 과금),
+      받은 메시지 내용이 API로 전송됩니다. 돈·약속 확정 같은 중요한 대화는 직접 답장하세요.
+    </p>
+  </section>
+
+  <section class="card">
+    <h2>1. 자동 답장 대상 추가</h2>
+    <form id="person-form">
+      <div class="row">
+        <label>
+          이름 (연락처에 저장된 이름)
+          <input type="text" id="name" placeholder="예: 김민수" required />
+        </label>
+        <label>
+          관계
+          <input type="text" id="relationship" placeholder="예: 직장 동료, 어머니" />
+        </label>
+      </div>
+
+      <div class="row">
+        <label>
+          말투
+          <select id="tone">
+            <option value="polite-warm">존댓말 · 다정하게</option>
+            <option value="polite-formal">존댓말 · 정중하게 (업무)</option>
+            <option value="casual-friendly">반말 · 친근하게</option>
+            <option value="casual-brief">반말 · 간결하게</option>
+          </select>
+        </label>
+        <label>
+          답장 길이
+          <select id="length">
+            <option value="short">아주 짧게 (한 문장)</option>
+            <option value="normal" selected>보통 (1~2문장)</option>
+            <option value="long">여유 있게 (2~3문장)</option>
+          </select>
+        </label>
+        <label>
+          이모지
+          <select id="emoji">
+            <option value="none">안 씀</option>
+            <option value="light" selected>가끔 하나 정도</option>
+            <option value="free">자유롭게</option>
+          </select>
+        </label>
+      </div>
+
+      <label class="full">
+        분위기 / 스타일 자유 설명 (선택)
+        <textarea id="style" rows="2" placeholder="예: 무뚝뚝하지만 챙겨주는 느낌. 'ㅋㅋ'는 가끔, 'ㅎㅎ'는 안 씀."></textarea>
+      </label>
+
+      <label class="full">
+        내가 평소 보내는 답장 예시 (선택 · 한 줄에 하나씩)
+        <textarea id="examples" rows="3" placeholder="응 알겠어 이따 봐&#10;넵 확인했습니다!&#10;오키 도착하면 연락줘"></textarea>
+      </label>
+
+      <div class="row">
+        <label>
+          모델
+          <select id="model">
+            <option value="claude-sonnet-5" selected>Claude Sonnet 5 (권장)</option>
+            <option value="claude-haiku-4-5-20251001">Claude Haiku 4.5 (빠르고 저렴)</option>
+            <option value="claude-opus-4-8">Claude Opus 4.8</option>
+          </select>
+        </label>
+      </div>
+
+      <button type="submit">대상 추가</button>
+    </form>
+  </section>
+
+  <section class="card">
+    <h2>2. 등록된 대상</h2>
+    <ul id="person-list" class="schedule-list">
+      <li class="empty">아직 등록된 대상이 없습니다.</li>
+    </ul>
+    <div class="actions">
+      <button type="button" id="export-btn" class="ghost">JSON 내보내기</button>
+      <label class="ghost-button">
+        JSON 가져오기
+        <input type="file" id="import-input" accept="application/json" hidden />
+      </label>
+      <button type="button" id="clear-btn" class="ghost danger">전체 삭제</button>
+    </div>
+  </section>
+
+  <section class="card guide">
+    <h2>3. 아이폰에서 설정하는 법</h2>
+    <p>
+      대상마다 아래 순서로 진행합니다: ① Anthropic API 키 준비 → ② 답장 생성 단축어 만들기 →
+      ③ "메시지" 오토메이션 등록. 각 대상 카드의 프롬프트와 요청 본문을 복사해 사용하세요.
+    </p>
+    <div id="guide-output">
+      <p class="empty">위에서 대상을 추가하면 맞춤 가이드가 표시됩니다.</p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <p>이 페이지는 문자를 직접 보내지 않습니다. 설정은 브라우저(localStorage)에만 저장되며, API 키는 여기에 입력하지 마세요.</p>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
