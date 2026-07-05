@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="한글놀이" />
+  <title>한글놀이 — 낱말 읽기</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🗣️</text></svg>" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- 홈 화면: 카테고리 고르기 -->
+  <section id="home" class="screen">
+    <header class="home-header">
+      <h1>🗣️ 한글놀이</h1>
+      <p class="subtitle">낱말을 소리 내어 읽어 보아요!</p>
+      <div class="star-bank" id="starBank" title="모은 별">⭐ <span id="starCount">0</span></div>
+    </header>
+    <div id="categoryGrid" class="category-grid"></div>
+    <p id="srNotice" class="sr-notice hidden">
+      ⚠️ 이 브라우저는 음성 인식을 지원하지 않아요.
+      아이가 읽으면 부모님이 ⭕ / 🔁 버튼으로 확인해 주는 방식으로 진행돼요.
+      (아이패드는 <strong>Safari</strong>에서 열어 주세요)
+    </p>
+  </section>
+
+  <!-- 놀이 화면 -->
+  <section id="play" class="screen hidden">
+    <header class="play-header">
+      <button id="btnHome" class="icon-btn" aria-label="홈으로">🏠</button>
+      <div class="progress-wrap">
+        <div class="progress-bar"><div id="progressFill" class="progress-fill"></div></div>
+        <div id="progressText" class="progress-text">1 / 10</div>
+      </div>
+      <div class="star-bank small">⭐ <span id="starCountPlay">0</span></div>
+    </header>
+
+    <main class="play-main">
+      <div id="wordCard" class="word-card">
+        <div id="hintEmoji" class="hint-emoji hidden">🐶</div>
+        <div id="wordText" class="word-text">강아지</div>
+        <button id="btnHint" class="hint-btn">🎁 힌트</button>
+      </div>
+
+      <div id="feedback" class="feedback"></div>
+      <div id="heardText" class="heard-text"></div>
+
+      <div class="controls">
+        <button id="btnListen" class="ctl-btn listen">
+          <span class="ctl-icon">🔊</span>
+          <span class="ctl-label">들어보기</span>
+        </button>
+        <button id="btnMic" class="ctl-btn mic">
+          <span class="ctl-icon">🎤</span>
+          <span class="ctl-label">말하기</span>
+        </button>
+        <button id="btnSkip" class="ctl-btn skip">
+          <span class="ctl-icon">➡️</span>
+          <span class="ctl-label">다음</span>
+        </button>
+      </div>
+
+      <!-- 음성 인식이 안 될 때: 부모님 확인 모드 -->
+      <div id="parentControls" class="parent-controls hidden">
+        <p>아이가 읽는 것을 듣고 눌러 주세요</p>
+        <div class="parent-btns">
+          <button id="btnParentOk" class="parent-btn ok">⭕ 잘 읽었어요</button>
+          <button id="btnParentRetry" class="parent-btn retry">🔁 다시 읽기</button>
+        </div>
+      </div>
+    </main>
+  </section>
+
+  <!-- 완료 화면 -->
+  <section id="done" class="screen hidden">
+    <div class="done-card">
+      <div class="done-emoji">🏆</div>
+      <h2>참 잘했어요!</h2>
+      <p id="doneStars" class="done-stars">⭐×10</p>
+      <div class="done-btns">
+        <button id="btnReplay" class="big-btn">🔄 한 번 더</button>
+        <button id="btnDoneHome" class="big-btn alt">🏠 다른 낱말</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 듣는 중 오버레이 -->
+  <div id="micOverlay" class="mic-overlay hidden">
+    <div class="mic-pulse">🎤</div>
+    <p>귀 기울여 듣고 있어요…</p>
+    <button id="btnMicCancel" class="mic-cancel">그만두기</button>
+  </div>
+
+  <canvas id="confetti"></canvas>
+
+  <script src="words.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
