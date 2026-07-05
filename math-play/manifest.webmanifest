@@ -1,0 +1,13 @@
+{
+  "name": "수학놀이터 — 펜슬로 배우는 수 개념",
+  "short_name": "수학놀이터",
+  "description": "애플펜슬로 쓰고 긋고 나누며 수의 원리를 배우는 6세 수학 개념 놀이",
+  "start_url": ".",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#fff7d6",
+  "theme_color": "#ffd93d",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
