@@ -35,12 +35,20 @@ pgrep -fl 'openclaw.*gateway'    # 2줄 이상 나오면 이것이 원인
 ### 2. 다른 기기에서도 게이트웨이가 돌고 있음
 
 예전에 노트북·다른 맥에서 설정해 둔 게이트웨이가 같은 봇 토큰으로 켜져 있는 경우.
-이때는 중복·유실이 무작위로 섞여 나타납니다. 그 기기에서 게이트웨이를 끄세요.
+이때는 중복·유실이 무작위로 섞여 나타나고, 로그에 텔레그램 폴링 충돌이 찍힙니다:
+
+```bash
+grep -riE 'conflict|terminated by other' ~/.openclaw/logs | tail   # 나오면 다른 기기 존재
+```
+
+그 기기에서 게이트웨이를 끄세요.
 
 ### 3. 구버전 + 신버전 서비스가 동시 등록
 
 clawdbot 시절 launchd 서비스와 openclaw 서비스가 둘 다 등록된 경우.
-`launchctl list | grep -iE 'openclaw|clawdbot'`로 확인하고 하나만 남기세요.
+`launchctl list | grep -iE 'openclaw|clawdbot'`로 확인하고 **gateway** 라벨이
+2개면 하나만 남기세요. `com.openclaw.ocrrefine` 같은 보조 서비스는 게이트웨이가
+아니므로 중복이 아닙니다.
 
 ### 4. 모델이 스스로 반복 (위가 전부 아니라면)
 
