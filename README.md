@@ -1,3 +1,11 @@
+# JsPapa
+
+## 🎨 수학놀이터 (`math-play/`)
+
+애플펜슬로 쓰고 긋고 나누며 **수 개념의 원리**를 배우는 6세용 아이패드 웹앱.
+직산(subitizing)·수 가르기(number bond)·십틀(ten frame)·공평 분배 등 검증된 수학 교육 이론 기반의 미니게임 5종과
+$P 알고리즘 손글씨 숫자 인식기를 담고 있습니다. 자세한 내용은 [`math-play/README.md`](math-play/README.md).
+
 # iPad 전원 스케줄러
 
 iPad의 전원을 시간대별로 켜고/끄는 일정을 관리하고, 그 일정을 iOS 단축어(Shortcuts) 오토메이션으로 설정하는 방법을 안내해주는 정적 웹앱입니다.
