@@ -13,9 +13,16 @@ SITE="${1:?사용법: ./translate.sh <ft|economist> <URL> [--summary]}"
 URL="${2:?기사 URL 필요}"
 MODE="${3:-}"
 
-# 로컬 LLM 엔드포인트 (LM Studio 기본; Ollama면 OLLAMA 로 override)
+# 번역에 쓸 LLM 엔드포인트 (OpenAI 호환 chat/completions).
+#   기본: 로컬 LM Studio.  GLM 5.2 클라우드로 쓰려면 .env 또는 환경변수로 override:
+#     export LLM_URL=https://open.bigmodel.cn/api/paas/v4/chat/completions
+#     export LLM_MODEL=glm-5.2
+#     export LLM_API_KEY=<Z.ai / BigModel API 키>
+# 같은 폴더의 .env 가 있으면 자동 로드 (키를 채팅/코드에 하드코딩하지 말 것)
+[ -f "$SCRIPT_DIR/.env" ] && set -a && . "$SCRIPT_DIR/.env" && set +a
 LLM_URL="${LLM_URL:-http://127.0.0.1:1234/v1/chat/completions}"
 LLM_MODEL="${LLM_MODEL:-qwen3.6-35b-a3b}"
+LLM_API_KEY="${LLM_API_KEY:-}"
 
 # 1) 본문 추출
 ARTICLE="$(node "$SCRIPT_DIR/fetch.mjs" "$SITE" "$URL" --text)"
@@ -41,5 +48,8 @@ const body = {
 process.stdout.write(JSON.stringify(body));
 ')"
 
-curl -fsS "$LLM_URL" -H 'Content-Type: application/json' -d "$PAYLOAD" \
+AUTH=()
+[ -n "$LLM_API_KEY" ] && AUTH=(-H "Authorization: Bearer $LLM_API_KEY")
+
+curl -fsS "$LLM_URL" -H 'Content-Type: application/json' "${AUTH[@]}" -d "$PAYLOAD" \
   | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{try{console.log(JSON.parse(s).choices[0].message.content)}catch(e){console.error("LLM 응답 파싱 실패:",s.slice(0,300))}})'

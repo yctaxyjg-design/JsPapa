@@ -26,3 +26,7 @@ TestResults.xml
 economist/out/
 # Local Claude Code settings overrides (machine-specific)
 .claude/settings.local.json
+
+### Article fetcher ###
+# API keys / endpoint secrets for translate.sh (never commit)
+openclaw/article-fetcher/.env
