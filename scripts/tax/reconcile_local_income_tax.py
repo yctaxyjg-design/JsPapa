@@ -77,7 +77,12 @@ def read_excel(path: Path, sheet: str | int | None) -> pd.DataFrame:
     """엑셀 파일을 문자열 우선으로 읽어 원본 식별번호 손실을 줄인다."""
     if not path.exists():
         raise FileNotFoundError(f"파일이 없습니다: {path}")
-    return pd.read_excel(path, sheet_name=sheet if sheet is not None else 0, dtype=str)
+    selected_sheet: str | int = sheet if sheet is not None else 0
+    if isinstance(selected_sheet, str) and selected_sheet.isdigit():
+        with pd.ExcelFile(path) as workbook:
+            if selected_sheet not in workbook.sheet_names:
+                selected_sheet = int(selected_sheet)
+    return pd.read_excel(path, sheet_name=selected_sheet, dtype=str)
 
 
 def prepare_notice(df: pd.DataFrame, args: argparse.Namespace) -> pd.DataFrame:
@@ -106,10 +111,10 @@ def classify(row: pd.Series, tolerance: int) -> str:
     diff = row["차이금액"]
     notice = row["통보세액"]
     paid = row["수납세액"]
-    if abs(diff) <= tolerance:
-        return "정상"
     if notice > 0 and paid == 0:
         return "미납"
+    if abs(diff) <= tolerance:
+        return "정상"
     if diff < -tolerance:
         return "과소"
     if diff > tolerance:
@@ -164,10 +169,6 @@ def build_parser() -> argparse.ArgumentParser:
 def main() -> int:
     parser = build_parser()
     args = parser.parse_args()
-    for attr in ("notice_sheet", "payment_sheet"):
-        value = getattr(args, attr)
-        if isinstance(value, str) and value.isdigit():
-            setattr(args, attr, int(value))
     try:
         result = reconcile(args)
         write_output(result, Path(args.output))
