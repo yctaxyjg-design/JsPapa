@@ -124,6 +124,7 @@
 
     return {
       burst: function (n) {
+        if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
         n = n || 120;
         var dpr = devicePixelRatio;
         for (var i = 0; i < n; i++) {
@@ -173,7 +174,7 @@
     this.onIdle = opts.onIdle || null;
     this.enabled = true;
     this._cur = null;
-    this._sawPen = false;
+    this._lastPenAt = 0;
     this._idleTimer = null;
 
     function resize() {
@@ -194,13 +195,19 @@
 
     function down(e) {
       if (!self.enabled) return;
-      if (e.pointerType === 'pen') self._sawPen = true;
-      // 펜을 한 번이라도 쓰면 손바닥(터치)은 무시 → 팜 리젝션
-      if (e.pointerType === 'touch' && self._sawPen) return;
+      var now = e.timeStamp || Date.now();
+      if (e.pointerType === 'pen') self._lastPenAt = now;
+      // 팜 리젝션: 펜으로 그리는 도중이거나 펜을 막 뗀 직후(700ms)의 터치는
+      // 손바닥이 닿은 것으로 보고 무시한다. 펜을 한동안 안 쓰면 손가락이 다시 먹힌다.
+      if (e.pointerType === 'touch') {
+        var penActive = self._cur && self._cur.type === 'pen';
+        var recentPen = self._lastPenAt && (now - self._lastPenAt) < 700;
+        if (penActive || recentPen) return;
+      }
       e.preventDefault();
       if (self._idleTimer) { clearTimeout(self._idleTimer); self._idleTimer = null; }
       canvas.setPointerCapture(e.pointerId);
-      self._cur = { id: e.pointerId, pts: [toLocal(e)] };
+      self._cur = { id: e.pointerId, type: e.pointerType, pts: [toLocal(e)] };
     }
 
     function move(e) {
@@ -286,9 +293,11 @@
 
     var head = el('div', 'game-head');
     var backBtn = el('button', 'btn-round', '🏠');
+    backBtn.setAttribute('aria-label', '처음으로');
     backBtn.addEventListener('click', function () { tts.ok && speechSynthesis.cancel(); showHome(); });
     var prompt = el('div', 'prompt-bar', '');
     var speakBtn = el('button', 'btn-round', '🔊');
+    speakBtn.setAttribute('aria-label', '문제 다시 듣기');
     var lastPrompt = '';
     speakBtn.addEventListener('click', function () { if (lastPrompt) tts.speak(lastPrompt); });
     var starRow = el('div', 'star-row', '');
@@ -344,7 +353,9 @@
         stage.appendChild(fin);
         confetti.burst(this.stars >= ROUNDS ? 200 : 90);
         sfx.fanfare();
-        tts.speak(msg + ' 별을 ' + NATIVE_DET[this.stars] + ' 개 모았어요!');
+        tts.speak(this.stars > 0
+          ? msg + ' 별을 ' + NATIVE_DET[this.stars] + ' 개 모았어요!'
+          : msg + ' 다음엔 더 잘할 수 있어요!');
       }
     };
     shell.renderStars();
@@ -484,7 +495,7 @@
       var guide = round < 2 ? n : null;
       panel.ask(n, guide, function onCorrect() {
         shell.addStar();
-        tts.speak(emoji.length ? NATIVE_DET[n] + ' 개! 정말 잘 세었어요!' : '잘했어요!');
+        tts.speak(NATIVE_DET[n] + ' 개! 정말 잘 세었어요!');
         confetti.burst(50);
         round++;
         setTimeout(nextRound, 1800);
