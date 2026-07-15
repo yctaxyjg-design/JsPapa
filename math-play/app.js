@@ -31,6 +31,17 @@
 
   function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
+  /* ============ 활성 리소스 정리 (화면 전환 시 누수 방지) ============ */
+  // 게임이 거는 타이머/InkPad를 모아 두었다가, 홈 이동·게임 재시작 때 한꺼번에 정리한다.
+  var _timers = [], _intervals = [], _pads = [];
+  function later(fn, ms) { var id = setTimeout(fn, ms); _timers.push(id); return id; }
+  function every(fn, ms) { var id = setInterval(fn, ms); _intervals.push(id); return id; }
+  function clearActive() {
+    _timers.forEach(clearTimeout); _timers = [];
+    _intervals.forEach(clearInterval); _intervals = [];
+    _pads.forEach(function (p) { try { p.destroy(); } catch (e) {} }); _pads = [];
+  }
+
   /* ================= 음성(TTS) ================= */
 
   var tts = {
@@ -176,6 +187,8 @@
     this._cur = null;
     this._lastPenAt = 0;
     this._idleTimer = null;
+    this._destroyed = false;
+    _pads.push(this); // 화면 전환 시 clearActive()가 정리
 
     function resize() {
       var r = canvas.getBoundingClientRect();
@@ -276,7 +289,13 @@
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
   };
 
+  InkPad.prototype.cancelIdle = function () {
+    if (this._idleTimer) { clearTimeout(this._idleTimer); this._idleTimer = null; }
+  };
+
   InkPad.prototype.destroy = function () {
+    if (this._destroyed) return; // 멱등: 두 번 호출돼도 안전
+    this._destroyed = true;
     if (this._idleTimer) clearTimeout(this._idleTimer);
     this._ro.disconnect();
     this.canvas.removeEventListener('pointerdown', this._down);
@@ -288,6 +307,7 @@
   /* ================= 게임 공통 셸 ================= */
 
   function gameShell(def) {
+    clearActive();
     app.innerHTML = '';
     var root = el('div', 'game');
 
@@ -400,6 +420,7 @@
 
     function attempt() {
       if (state.locked || state.expected === null || !pad.strokes.length) return;
+      pad.cancelIdle(); // 버튼·자동채점(idle)이 같은 획을 두 번 채점하지 않도록
       var res = window.DigitRecognizer.recognize(pad.strokes);
       if (!res || res.distance > UNSURE_DISTANCE) {
         showFeedback('bad', '🤔', '음… 잘 모르겠어요. 다시 써 볼까요?', '음, 잘 모르겠어요. 또박또박 다시 써 볼까요?');
@@ -428,7 +449,7 @@
       fbMsg.textContent = msg;
       box.classList.add('shake');
       tts.speak(speech);
-      setTimeout(function () {
+      later(function () {
         box.classList.remove('shake');
         feedback.className = 'write-feedback';
         pad.clear();
@@ -498,7 +519,7 @@
         tts.speak(NATIVE_DET[n] + ' 개! 정말 잘 세었어요!');
         confetti.burst(50);
         round++;
-        setTimeout(nextRound, 1800);
+        later(nextRound, 1800);
       }, function onWrong(cnt) {
         if (cnt >= 2) hintCount(field, n);
       });
@@ -509,7 +530,7 @@
       var objs = field.querySelectorAll('.count-obj');
       tts.speak('선생님이랑 같이 세어 볼까요?');
       var i = 0;
-      var timer = setInterval(function () {
+      var timer = every(function () {
         if (i >= n) { clearInterval(timer); return; }
         var o = objs[i];
         o.dataset.n = i + 1;
@@ -573,6 +594,7 @@
       cover.appendChild(peek);
       shell.stage.appendChild(cover);
 
+      var hideTimer = null;
       function hide() { cover.classList.add('show'); }
       function show(ms) {
         cover.classList.remove('show');
@@ -584,7 +606,7 @@
             timerBar.style.width = '0%';
           });
         });
-        setTimeout(hide, ms);
+        hideTimer = later(hide, ms);
       }
 
       peek.addEventListener('click', function () { show(1200); });
@@ -594,16 +616,18 @@
       show(showMs);
 
       panel.ask(n, null, function onCorrect() {
+        clearTimeout(hideTimer); // 정답 후 남은 타이머가 커버를 다시 씌우지 않게
         cover.classList.remove('show');
         dots.forEach(function (d) { d.style.transform = 'translate(-50%,-50%) scale(1.25)'; });
         shell.addStar();
         tts.speak('맞아요! ' + NATIVE_DET[n] + ' 개였어요!');
         confetti.burst(50);
         round++;
-        setTimeout(nextRound, 1900);
+        later(nextRound, 1900);
       }, function onWrong(cnt) {
         if (cnt >= 2) {
           // 두 번 틀리면 아예 보여 주고 세게 한다
+          clearTimeout(hideTimer);
           cover.classList.remove('show');
           tts.speak('숨기지 않을게요. 천천히 세어 보세요!');
         }
@@ -681,7 +705,7 @@
           done = true;
           var right = n - left;
           objs.forEach(function (o, i) { o.classList.add(i < left ? 'go-left' : 'go-right'); });
-          setTimeout(function () { pad.clear(); }, 350);
+          later(function () { pad.clear(); }, 350);
           eq.innerHTML = n + ' = <span class="eq-a">' + left + '</span> + <span class="eq-b">' + right + '</span>';
           eq.classList.add('show');
           sfx.good();
@@ -689,7 +713,7 @@
           shell.addStar();
           confetti.burst(50);
           round++;
-          setTimeout(function () { pad.destroy(); nextRound(); }, 2600);
+          later(function () { pad.destroy(); nextRound(); }, 2600);
         }
       });
 
@@ -698,7 +722,7 @@
         msg.classList.add('show');
         sfx.bad();
         tts.speak(text.replace('↕', ''));
-        setTimeout(function () { msg.classList.remove('show'); }, 1600);
+        later(function () { msg.classList.remove('show'); }, 1600);
       }
     }
 
@@ -737,7 +761,7 @@
       panel.ask(answer, null, function onCorrect() {
         // 빈 칸이 하나씩 채워지는 애니메이션 → 10 완성 경험
         var i = k;
-        var timer = setInterval(function () {
+        var timer = every(function () {
           if (i >= 10) {
             clearInterval(timer);
             tts.speak(k + ' 더하기 ' + answer + '는 10! 십틀이 가득 찼어요!');
@@ -750,7 +774,7 @@
         shell.addStar();
         confetti.burst(50);
         round++;
-        setTimeout(nextRound, 2400 + answer * 320);
+        later(nextRound, 2400 + answer * 320);
       }, function onWrong(cnt) {
         if (cnt >= 2) {
           tts.speak('빈 칸을 콕콕 짚으면서 세어 보세요!');
@@ -861,7 +885,7 @@
         sfx.pop();
         updateCounts();
         if (cookies.every(function (c) { return c.dataset.owner !== ''; })) {
-          setTimeout(evaluate, 550);
+          later(evaluate, 550);
         }
       }
 
@@ -888,7 +912,7 @@
             ' 명이 나누면 ' + NATIVE_DET[each] + ' 개씩! 모두 똑같아서 행복해요!');
           shell.addStar();
           round++;
-          setTimeout(function () { pad.destroy(); nextRound(); }, 3000);
+          later(function () { pad.destroy(); nextRound(); }, 3000);
         } else {
           var minC = Math.min.apply(null, counts);
           var sadIdx = counts.indexOf(minC);
@@ -897,7 +921,7 @@
           msg.classList.add('show');
           sfx.bad();
           tts.speak('어? ' + '접시에 놓인 쿠키 수가 달라요. 똑같이 다시 나눠 볼까요?');
-          setTimeout(function () {
+          later(function () {
             msg.classList.remove('show');
             friends.forEach(function (f) { f.el.classList.remove('sad'); });
             cookies.forEach(takeBack);
@@ -961,6 +985,7 @@
     '<p>팁: 아이패드 사파리에서 <b>공유 → 홈 화면에 추가</b>를 하면 전체 화면 앱처럼 쓸 수 있어요. 스피커 버튼 🔊 을 누르면 문제를 다시 읽어 줍니다.</p>';
 
   function showHome() {
+    clearActive();
     app.innerHTML = '';
     var home = el('div', 'home');
     home.appendChild(el('h1', 'home-title', '🎨 수학놀이터'));
