@@ -185,7 +185,7 @@
     this.onIdle = opts.onIdle || null;
     this.enabled = true;
     this._cur = null;
-    this._lastPenAt = 0;
+    this._palm = new window.PalmRejection.PalmGate(window.PalmRejection.PEN_GRACE_MS);
     this._idleTimer = null;
     this._destroyed = false;
     _pads.push(this); // 화면 전환 시 clearActive()가 정리
@@ -209,14 +209,9 @@
     function down(e) {
       if (!self.enabled) return;
       var now = e.timeStamp || Date.now();
-      if (e.pointerType === 'pen') self._lastPenAt = now;
-      // 팜 리젝션: 펜으로 그리는 도중이거나 펜을 막 뗀 직후(700ms)의 터치는
-      // 손바닥이 닿은 것으로 보고 무시한다. 펜을 한동안 안 쓰면 손가락이 다시 먹힌다.
-      if (e.pointerType === 'touch') {
-        var penActive = self._cur && self._cur.type === 'pen';
-        var recentPen = self._lastPenAt && (now - self._lastPenAt) < 700;
-        if (penActive || recentPen) return;
-      }
+      // 팜 리젝션(로직은 palm-rejection.js의 순수 상태 머신에 응집)
+      var penActive = self._cur && self._cur.type === 'pen';
+      if (!self._palm.shouldStart(e.pointerType, now, penActive)) return;
       e.preventDefault();
       if (self._idleTimer) { clearTimeout(self._idleTimer); self._idleTimer = null; }
       canvas.setPointerCapture(e.pointerId);
@@ -225,7 +220,7 @@
 
     function move(e) {
       if (!self._cur || e.pointerId !== self._cur.id) return;
-      if (e.pointerType === 'pen') self._lastPenAt = e.timeStamp || Date.now();
+      if (e.pointerType === 'pen') self._palm.penSeen(e.timeStamp || Date.now());
       e.preventDefault();
       var events = e.getCoalescedEvents ? e.getCoalescedEvents() : [e];
       events.forEach(function (ev) {
@@ -241,7 +236,7 @@
     function up(e) {
       if (!self._cur || e.pointerId !== self._cur.id) return;
       // 펜을 뗀 '실제' 시각을 기록해야 긴 필기(>700ms) 직후의 손바닥 터치도 팜 리젝션됨
-      if (e.pointerType === 'pen') self._lastPenAt = e.timeStamp || Date.now();
+      if (e.pointerType === 'pen') self._palm.penSeen(e.timeStamp || Date.now());
       var stroke = self._cur.pts;
       self._cur = null;
       // 점 하나짜리 낙서(우연한 터치)는 버림
