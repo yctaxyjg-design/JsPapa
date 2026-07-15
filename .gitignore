@@ -27,6 +27,10 @@ economist/out/
 # Local Claude Code settings overrides (machine-specific)
 .claude/settings.local.json
 
+### ft-edit-save automation ###
+# Machine-specific config (command / schedule / claude CLI path), never commit
+scripts/automation/config.sh
+
 ### Article fetcher ###
 # API keys / endpoint secrets for translate.sh (never commit)
 openclaw/article-fetcher/.env
