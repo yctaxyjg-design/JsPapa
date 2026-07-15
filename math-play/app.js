@@ -225,6 +225,7 @@
 
     function move(e) {
       if (!self._cur || e.pointerId !== self._cur.id) return;
+      if (e.pointerType === 'pen') self._lastPenAt = e.timeStamp || Date.now();
       e.preventDefault();
       var events = e.getCoalescedEvents ? e.getCoalescedEvents() : [e];
       events.forEach(function (ev) {
@@ -239,6 +240,8 @@
 
     function up(e) {
       if (!self._cur || e.pointerId !== self._cur.id) return;
+      // 펜을 뗀 '실제' 시각을 기록해야 긴 필기(>700ms) 직후의 손바닥 터치도 팜 리젝션됨
+      if (e.pointerType === 'pen') self._lastPenAt = e.timeStamp || Date.now();
       var stroke = self._cur.pts;
       self._cur = null;
       // 점 하나짜리 낙서(우연한 터치)는 버림
