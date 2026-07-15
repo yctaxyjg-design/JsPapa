@@ -22,6 +22,7 @@
   let roundStars = 0;
   let recognition = null;
   let recognizing = false;
+  let advancing = false; // 정답/도움/건너뛰기 중복 진행(더블탭) 방지
 
   const store = {
     get stars() { return Number(localStorage.getItem("hangul.stars") || 0); },
@@ -158,6 +159,7 @@
   resizeCanvas();
 
   function burstConfetti(count = 90) {
+    if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const colors = ["#f87171", "#fbbf24", "#34d399", "#60a5fa", "#a78bfa", "#f472b6"];
     for (let i = 0; i < count; i++) {
       pieces.push({
@@ -264,6 +266,8 @@
   const PRAISES = ["참 잘했어요!", "정말 멋져요!", "우와, 최고예요!", "딩동댕! 정답이에요!", "짝짝짝! 잘 읽었어요!"];
 
   async function onCorrect() {
+    if (advancing) return;
+    advancing = true;
     roundStars++;
     store.stars++;
     updateStars();
@@ -293,6 +297,8 @@
   }
 
   async function onGiveHelp() {
+    if (advancing) return;
+    advancing = true;
     // 여러 번 시도했으면 정답을 들려주고 다음으로
     setFeedback(`🔊 "${current().w}" 라고 읽어요`, "almost");
     $("hintEmoji").classList.remove("hidden");
@@ -306,6 +312,7 @@
         index++;
         if (index >= queue.length) finishRound();
         else showWord();
+        advancing = false;
         resolve();
       }, delay);
     });
@@ -313,7 +320,7 @@
 
   function finishRound() {
     show("done");
-    $("doneStars").textContent = "⭐".repeat(Math.max(roundStars, 1)) + `  (${roundStars} / ${queue.length})`;
+    $("doneStars").textContent = (roundStars > 0 ? "⭐".repeat(roundStars) : "🙂") + `  (${roundStars} / ${queue.length})`;
     soundFanfare();
     burstConfetti(140);
     speak(`오늘 별을 ${roundStars}개 모았어요. 참 잘했어요!`, 1);
@@ -398,7 +405,12 @@
   $("btnReplay").addEventListener("click", () => startRound(category));
   $("btnListen").addEventListener("click", () => { ensureAudio(); speak(current().w, 0.75); });
   $("btnMic").addEventListener("click", onMic);
-  $("btnSkip").addEventListener("click", () => { speechSynthesis.cancel(); next(); });
+  $("btnSkip").addEventListener("click", () => {
+    if (advancing) return;
+    advancing = true;
+    speechSynthesis.cancel();
+    next();
+  });
   $("btnHint").addEventListener("click", () => {
     $("hintEmoji").classList.remove("hidden");
     $("btnHint").classList.add("hidden");
