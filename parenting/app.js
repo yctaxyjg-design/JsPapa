@@ -3,21 +3,32 @@
   "use strict";
 
   var KEY = "parenting-spreadsheet-v1";
-  var SLOTS_PER_DAY = 10; // 육아일 환산 기준: 하루 10개 항목
 
-  // 육아 항목 (요청 순서)
+  // 항목 (요청 순서) — cat: 육아 / 가사
   var SLOTS = [
-    { id: "bedtime-story", emo: "📖", label: "취침 전 동화" },
-    { id: "bedtime",       emo: "😴", label: "취침" },
-    { id: "breakfast",     emo: "🥣", label: "아침식사" },
-    { id: "dinner",        emo: "🍽️", label: "저녁식사" },
-    { id: "dropoff",       emo: "🏫", label: "아이 등원" },
-    { id: "pickup",        emo: "🎒", label: "아이 하원" },
-    { id: "weekday-play",  emo: "🏠", label: "평일 저녁 놀이" },
-    { id: "holiday-am",    emo: "🖍️", label: "휴일 오전 놀이" },
-    { id: "holiday-pm",    emo: "🧩", label: "휴일 오후 놀이" },
-    { id: "holiday-eve",   emo: "🚂", label: "휴일 저녁 놀이" }
+    { id: "bedtime-story", emo: "📖", label: "취침 전 동화", cat: "육아" },
+    { id: "bedtime",       emo: "😴", label: "취침",         cat: "육아" },
+    { id: "breakfast",     emo: "🥣", label: "아침식사",     cat: "육아" },
+    { id: "dinner",        emo: "🍽️", label: "저녁식사",     cat: "육아" },
+    { id: "dropoff",       emo: "🏫", label: "아이 등원",     cat: "육아" },
+    { id: "pickup",        emo: "🎒", label: "아이 하원",     cat: "육아" },
+    { id: "weekday-play",  emo: "🏠", label: "평일 저녁 놀이", cat: "육아" },
+    { id: "holiday-am",    emo: "🖍️", label: "휴일 오전 놀이", cat: "육아" },
+    { id: "holiday-pm",    emo: "🧩", label: "휴일 오후 놀이", cat: "육아" },
+    { id: "holiday-eve",   emo: "🚂", label: "휴일 저녁 놀이", cat: "육아" },
+    { id: "cleaning",      emo: "🧹", label: "청소",          cat: "가사" },
+    { id: "bathroom",      emo: "🚽", label: "화장실 청소",    cat: "가사" },
+    { id: "laundry",       emo: "🧺", label: "빨래",          cat: "가사" },
+    { id: "dishes",        emo: "🧽", label: "설거지",        cat: "가사" }
   ];
+
+  // 카테고리 표시 순서
+  var CATEGORIES = ["육아", "가사"];
+  // 육아일 환산 기준: 육아 항목 수 (하루 육아 한 바퀴)
+  var CHILDCARE_PER_DAY = SLOTS.filter(function (s) { return s.cat === "육아"; }).length;
+  // 항목 id → 카테고리 조회
+  var CAT_BY_ID = {};
+  SLOTS.forEach(function (s) { CAT_BY_ID[s.id] = s.cat; });
 
   var DEFAULT = { people: { a: "엄마", b: "아빠" }, records: {} };
 
@@ -97,19 +108,26 @@
   function renderSlots() {
     var rec = state.records[current] || {};
     slotsEl.innerHTML = "";
-    SLOTS.forEach(function (s) {
-      var who = rec[s.id] ? rec[s.id].who : null;
-      var row = document.createElement("div");
-      row.className = "slot";
-      row.innerHTML =
-        '<div class="slot-label"><span class="emo">' + s.emo +
-        '</span><span class="txt">' + s.label + '</span></div>' +
-        '<div class="pick">' +
-          btn(s.id, "a",    state.people.a, who) +
-          btn(s.id, "both", "함께",          who) +
-          btn(s.id, "b",    state.people.b, who) +
-        '</div>';
-      slotsEl.appendChild(row);
+    CATEGORIES.forEach(function (cat) {
+      var head = document.createElement("div");
+      head.className = "cat-head";
+      head.textContent = cat === "육아" ? "👶 육아" : "🏡 가사";
+      slotsEl.appendChild(head);
+
+      SLOTS.filter(function (s) { return s.cat === cat; }).forEach(function (s) {
+        var who = rec[s.id] ? rec[s.id].who : null;
+        var row = document.createElement("div");
+        row.className = "slot";
+        row.innerHTML =
+          '<div class="slot-label"><span class="emo">' + s.emo +
+          '</span><span class="txt">' + s.label + '</span></div>' +
+          '<div class="pick">' +
+            btn(s.id, "a",    state.people.a, who) +
+            btn(s.id, "both", "함께",          who) +
+            btn(s.id, "b",    state.people.b, who) +
+          '</div>';
+        slotsEl.appendChild(row);
+      });
     });
     // 이벤트 위임
     slotsEl.querySelectorAll(".pick button").forEach(function (b) {
@@ -167,10 +185,11 @@
     $("count-a").textContent = fmt(all.a);
     $("count-b").textContent = fmt(all.b);
 
-    // 육아일 환산 격차
-    var dayGap = Math.abs(all.a - all.b) / SLOTS_PER_DAY;
+    // 육아일 환산 격차 (육아 항목만)
+    var care = tally(function (dk, sid) { return CAT_BY_ID[sid] === "육아"; });
+    var dayGap = Math.abs(care.a - care.b) / CHILDCARE_PER_DAY;
     $("days-gap").textContent = "+" + fmt(dayGap) + "일";
-    $("days-who").textContent = leadName(all.a, all.b);
+    $("days-who").textContent = leadName(care.a, care.b);
 
     // 취침 담당 격차
     var bed = tally(function (dk, sid) { return sid === "bedtime"; });
