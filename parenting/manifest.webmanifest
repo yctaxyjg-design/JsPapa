@@ -1,0 +1,16 @@
+{
+  "name": "육아 공평분담 스프레드시트",
+  "short_name": "육아분담",
+  "description": "아빠·엄마가 함께 쓰는 육아 분담 기록 앱. 탭으로 담당 기록, 누적 통계와 분담률, iCloud Drive 백업.",
+  "start_url": ".",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#eef1f5",
+  "theme_color": "#1f3a5f",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
