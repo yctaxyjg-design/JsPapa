@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="국기 놀이" />
+<title>국기 맞히기 놀이 🌏</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<div id="app">
+
+  <!-- 시작 화면 -->
+  <section id="start-screen" class="screen active">
+    <div class="start-inner">
+      <div class="start-globe">🌏</div>
+      <h1>국기 맞히기 놀이</h1>
+      <p class="start-sub">국기를 보고 나라 이름을 큰 소리로 말해 보세요!</p>
+      <button id="start-btn" class="big-btn">놀이 시작! 🚀</button>
+      <p id="mic-support-note" class="mic-note"></p>
+    </div>
+  </section>
+
+  <!-- 문제 화면 -->
+  <section id="quiz-screen" class="screen">
+    <header class="quiz-header">
+      <button id="home-btn" class="icon-btn" aria-label="처음으로">🏠</button>
+      <div id="progress" class="progress">1 / 10</div>
+      <div id="stars" class="stars"></div>
+    </header>
+
+    <div class="flag-area">
+      <div id="flag" class="flag">🇰🇷</div>
+      <p class="question-text">이 나라는 어디일까요?</p>
+    </div>
+
+    <div id="feedback" class="feedback" aria-live="polite"></div>
+
+    <div class="answer-area">
+      <button id="mic-btn" class="mic-btn">
+        <span class="mic-icon">🎤</span>
+        <span class="mic-label">눌러서 말하기</span>
+      </button>
+      <div id="choices" class="choices"></div>
+    </div>
+  </section>
+
+  <!-- 정답 정보 화면 -->
+  <section id="info-screen" class="screen">
+    <div class="info-card">
+      <div class="celebrate" id="celebrate">🎉</div>
+      <div id="info-flag" class="info-flag">🇰🇷</div>
+      <h2 id="info-name">대한민국</h2>
+
+      <div class="fact">
+        <span class="fact-icon">✨</span>
+        <div><strong>특징</strong><p id="info-feature"></p></div>
+      </div>
+      <div class="fact">
+        <span class="fact-icon">🏛️</span>
+        <div><strong>수도</strong><p id="info-capital"></p></div>
+      </div>
+      <div class="fact">
+        <span class="fact-icon">📜</span>
+        <div><strong>역사 이야기</strong><p id="info-history"></p></div>
+      </div>
+
+      <div class="info-actions">
+        <button id="replay-voice-btn" class="mid-btn ghost">🔊 다시 듣기</button>
+        <button id="next-btn" class="mid-btn">다음 문제 ➡️</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 끝 화면 -->
+  <section id="end-screen" class="screen">
+    <div class="start-inner">
+      <div class="start-globe">🏆</div>
+      <h1>참 잘했어요!</h1>
+      <p id="end-score" class="start-sub"></p>
+      <div id="end-stars" class="end-stars"></div>
+      <button id="restart-btn" class="big-btn">한 번 더 하기 🔄</button>
+    </div>
+  </section>
+
+</div>
+
+<script src="countries.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
