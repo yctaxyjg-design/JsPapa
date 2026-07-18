@@ -791,7 +791,7 @@
     var SETUPS = [
       { c: 4, f: 2 }, { c: 6, f: 2 }, { c: 6, f: 3 }, { c: 8, f: 2 }, { c: 8, f: 4 }, { c: 9, f: 3 }, { c: 10, f: 2 }
     ];
-    var FACES = ['🐰', '🐻', '🦊'];
+    var FACES = ['🐰', '🐻', '🦊', '🐱', '🐸'];
 
     function nextRound() {
       if (round >= ROUNDS) { shell.finish(); return; }
@@ -813,7 +813,7 @@
       for (var f = 0; f < nFriend; f++) {
         var fr = el('div', 'share-friend');
         fr.style.left = ((f + 1) * 100 / (nFriend + 1)) + '%';
-        fr.appendChild(el('div', 'sf-face', FACES[f]));
+        fr.appendChild(el('div', 'sf-face', FACES[f] || '🍽️'));
         fr.appendChild(el('div', 'sf-plate', '🍽️'));
         var cnt = el('div', 'sf-count', '0개');
         fr.appendChild(cnt);
@@ -915,7 +915,7 @@
           var minC = Math.min.apply(null, counts);
           var sadIdx = counts.indexOf(minC);
           friends.forEach(function (f, i) { f.el.classList.toggle('sad', i === sadIdx); });
-          msg.textContent = FACES[sadIdx] + ' 접시가 더 적어요!';
+          msg.textContent = (FACES[sadIdx] || '🍽️') + ' 접시가 더 적어요!';
           msg.classList.add('show');
           sfx.bad();
           tts.speak('어? ' + '접시에 놓인 쿠키 수가 달라요. 똑같이 다시 나눠 볼까요?');

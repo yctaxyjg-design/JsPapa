@@ -40,6 +40,7 @@
   let current = 0;       // 현재 문제 번호
   let starCount = 0;     // 한 번에 맞힌 문제 수
   let missedThisQuestion = false;
+  let answered = false; // 정답 처리 중복 방지(버튼 연타/음성 동시 입력)
 
   // ---------- 음성 인식 ----------
   const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -49,18 +50,14 @@
 
   if (!speechSupported) {
     el.micNote.textContent = "이 브라우저는 음성 인식이 안 돼서, 버튼을 눌러 답을 골라요.";
+    el.micBtn.classList.add("hidden");
   } else {
     el.micNote.textContent = "마이크 사용을 허용해 주세요. 아이가 말로 정답을 맞힐 수 있어요!";
   }
 
-  function normalize(text) {
-    return String(text).toLowerCase().replace(/[\s.,!?~'"‘’“”·-]/g, "");
-  }
-
+  // 정답 판정은 matcher.js(FlagMatcher)의 정확 일치 로직을 사용한다.
   function transcriptMatches(transcript, country) {
-    const heard = normalize(transcript);
-    if (!heard) return false;
-    return country.aliases.some((alias) => heard.includes(normalize(alias)));
+    return window.FlagMatcher.matches(transcript, country.aliases);
   }
 
   function startListening() {
@@ -175,6 +172,7 @@
   function showQuestion() {
     const country = round[current];
     missedThisQuestion = false;
+    answered = false;
 
     el.progress.textContent = `${current + 1} / ${round.length}`;
     el.stars.textContent = "⭐".repeat(Math.min(starCount, 5)) + (starCount > 5 ? `+${starCount - 5}` : "");
@@ -219,6 +217,8 @@
   }
 
   function handleCorrect() {
+    if (answered) return;
+    answered = true;
     abortListening();
     if (!missedThisQuestion) starCount++;
     dropConfetti();
