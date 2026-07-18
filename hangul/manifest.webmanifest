@@ -1,12 +1,12 @@
 {
-  "name": "수학놀이터 — 펜슬로 배우는 수 개념",
-  "short_name": "수학놀이터",
-  "description": "애플펜슬로 쓰고 긋고 나누며 수의 원리를 배우는 6세 수학 개념 놀이",
+  "name": "한글놀이 — 낱말 읽기",
+  "short_name": "한글놀이",
+  "description": "6세 아이가 낱말을 소리 내어 읽으며 한글을 익히는 놀이",
   "start_url": ".",
   "display": "standalone",
-  "orientation": "landscape",
-  "background_color": "#fff7d6",
-  "theme_color": "#ffd93d",
+  "orientation": "portrait",
+  "background_color": "#fef6e4",
+  "theme_color": "#6c8cff",
   "icons": [
     { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
     { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },

@@ -36,9 +36,25 @@ python3 -m http.server 8000
 GitHub Pages 등에 올리면 아이패드에서 바로 접속할 수 있습니다.
 음성은 iOS 설정에 한국어 Siri 음성이 있으면 그 목소리로 나옵니다.
 
+## 인식기 자가 테스트
+
+`recognizer.js`는 외부 의존성이 없어 Node에서 바로 검증할 수 있습니다.
+
+```sh
+node math-play/recognizer.test.js
+# 내장 숫자 템플릿이 자기 숫자로(거리 < 1.34) 인식되는지,
+# 빈 입력·낙서가 걸러지는지 확인 → "43 passed, 0 failed"
+
+node math-play/palm-rejection.test.js
+# 팜 리젝션: 긴 필기(>700ms) 직후의 손바닥 터치도 걸러지는지 등 → "6 passed, 0 failed"
+```
+
 ## 파일 구성
 
 - `index.html` — 진입점 (PWA 메타 포함)
 - `app.js` — 게임 5종, 잉크 패드(포인터 이벤트), TTS/효과음/폭죽, 별 저장(localStorage)
-- `recognizer.js` — $P 손글씨 숫자 인식기 (Node에서도 로드 가능, 자가 테스트용)
-- `styles.css`, `manifest.webmanifest`, `icon.svg`
+- `recognizer.js` — $P 손글씨 숫자 인식기 (외부 의존성 없음, Node에서도 로드 가능)
+- `recognizer.test.js` — 인식기 자가 테스트 (Node 실행)
+- `palm-rejection.js` — 팜 리젝션 상태 머신 (순수 로직, Node에서도 로드 가능)
+- `palm-rejection.test.js` — 팜 리젝션 회귀 테스트 (Node 실행)
+- `styles.css`, `manifest.webmanifest`, `icon.svg`, `icon-192.png`, `icon-512.png`
