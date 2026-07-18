@@ -12,7 +12,7 @@
   'use strict';
 
   var app = document.getElementById('app');
-  var ROUNDS = 5;
+  var ROUNDS = 7;
   var UNSURE_DISTANCE = 1.8; // recognizer 자가 테스트 기준(정상 ≤1.34, 낙서 ≥2.0)
 
   /* ================= 유틸 ================= */
@@ -486,7 +486,7 @@
 
     function nextRound() {
       if (round >= ROUNDS) { shell.finish(); return; }
-      var n = [randInt(1, 3), randInt(2, 5), randInt(3, 6), randInt(5, 8), randInt(6, 9)][round];
+      var n = [randInt(1, 3), randInt(2, 4), randInt(3, 5), randInt(4, 6), randInt(5, 7), randInt(6, 8), randInt(7, 9)][round];
       var emoji = pick(COUNT_EMOJI);
       shell.stage.innerHTML = '';
       var field = el('div', 'obj-field');
@@ -567,7 +567,7 @@
 
     function nextRound() {
       if (round >= ROUNDS) { shell.finish(); return; }
-      var n = [randInt(2, 3), randInt(3, 5), randInt(4, 6), randInt(5, 8), randInt(6, 9)][round];
+      var n = [randInt(2, 3), randInt(3, 4), randInt(3, 5), randInt(4, 6), randInt(5, 7), randInt(6, 8), randInt(7, 9)][round];
       var showMs = round < 2 ? 2200 : 1500;
       var emoji = pick(['⭐', '🌟', '🐥', '🍬']);
       shell.stage.innerHTML = '';
@@ -640,7 +640,7 @@
   function runSplit(def) {
     var shell = gameShell(def);
     var round = 0;
-    var NS = [4, 5, 6, 8, 9];
+    var NS = [4, 5, 6, 7, 8, 9, 10];
 
     function nextRound() {
       if (round >= ROUNDS) { shell.finish(); return; }
@@ -733,7 +733,7 @@
     var shell = gameShell(def);
     var panel = writePanel(shell);
     var round = 0;
-    var KS = [9, 5, 8, 6, 7]; // 채워져 있는 개수 (답 = 10-k)
+    var KS = [9, 8, 5, 7, 6, 4, 3]; // 채워져 있는 개수 (답 = 10-k)
 
     function nextRound() {
       if (round >= ROUNDS) { shell.finish(); return; }
@@ -789,7 +789,7 @@
     var shell = gameShell(def);
     var round = 0;
     var SETUPS = [
-      { c: 4, f: 2 }, { c: 6, f: 2 }, { c: 6, f: 3 }, { c: 8, f: 2 }, { c: 9, f: 3 }
+      { c: 4, f: 2 }, { c: 6, f: 2 }, { c: 6, f: 3 }, { c: 8, f: 2 }, { c: 8, f: 4 }, { c: 9, f: 3 }, { c: 10, f: 2 }
     ];
     var FACES = ['🐰', '🐻', '🦊'];
 
