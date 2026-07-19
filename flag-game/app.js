@@ -139,6 +139,80 @@
     window.speechSynthesis.getVoices(); // 목소리 목록 미리 불러오기
   }
 
+  // ---------- 효과음 (Web Audio, 코드로 생성) ----------
+  let audioCtx = null;
+  function getAudio() {
+    if (audioCtx) return audioCtx;
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return null;
+    try { audioCtx = new AC(); } catch (_) { audioCtx = null; }
+    return audioCtx;
+  }
+  // iOS는 사용자 터치 안에서 한 번 깨워야 소리가 난다
+  function unlockAudio() {
+    const ctx = getAudio();
+    if (ctx && ctx.state === "suspended") ctx.resume();
+  }
+  function beep(freq, start, dur, type, gainVal) {
+    const ctx = getAudio();
+    if (!ctx) return;
+    const t0 = ctx.currentTime + start;
+    const osc = ctx.createOscillator();
+    const g = ctx.createGain();
+    osc.type = type || "sine";
+    osc.frequency.setValueAtTime(freq, t0);
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(gainVal || 0.2, t0 + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    osc.connect(g).connect(ctx.destination);
+    osc.start(t0);
+    osc.stop(t0 + dur + 0.05);
+  }
+  // 정답: 밝게 올라가는 "딩-동-댕-딩~"
+  function playCorrect() {
+    if (!getAudio()) return;
+    unlockAudio();
+    [523.25, 659.25, 783.99, 1046.5].forEach((f, i) =>
+      beep(f, i * 0.11, 0.2, "triangle", 0.25)
+    );
+  }
+  // 오답: 코믹하게 축 처지는 "빠~아~아~암" (삑살 트럼펫 느낌)
+  function playWrong() {
+    const ctx = getAudio();
+    if (!ctx) return;
+    unlockAudio();
+    const t0 = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const g = ctx.createGain();
+    const filter = ctx.createBiquadFilter();
+    filter.type = "lowpass";
+    filter.frequency.setValueAtTime(1000, t0);
+    osc.type = "sawtooth";
+    // 계단처럼 한 음씩 축 내려가다 마지막에 쭉 흘러내림
+    osc.frequency.setValueAtTime(233, t0);
+    osc.frequency.setValueAtTime(233, t0 + 0.2);
+    osc.frequency.linearRampToValueAtTime(207, t0 + 0.22);
+    osc.frequency.setValueAtTime(207, t0 + 0.42);
+    osc.frequency.linearRampToValueAtTime(185, t0 + 0.44);
+    osc.frequency.setValueAtTime(185, t0 + 0.64);
+    osc.frequency.linearRampToValueAtTime(155, t0 + 0.66);
+    osc.frequency.linearRampToValueAtTime(110, t0 + 1.05); // 마지막에 축 처짐
+    // 살짝 흔들리는 "와와" 비브라토
+    const lfo = ctx.createOscillator();
+    const lfoGain = ctx.createGain();
+    lfo.frequency.setValueAtTime(7, t0);
+    lfoGain.gain.setValueAtTime(0.05, t0);
+    g.gain.setValueAtTime(0.22, t0);
+    g.gain.setValueAtTime(0.22, t0 + 0.85);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + 1.15);
+    lfo.connect(lfoGain).connect(g.gain);
+    osc.connect(filter).connect(g).connect(ctx.destination);
+    osc.start(t0);
+    lfo.start(t0);
+    osc.stop(t0 + 1.2);
+    lfo.stop(t0 + 1.2);
+  }
+
   // ---------- 화면 전환 ----------
   function show(name) {
     Object.values(screens).forEach((s) => s.classList.remove("active"));
@@ -213,6 +287,7 @@
   function handleWrong(message) {
     missedThisQuestion = true;
     setFeedback(message, "");
+    playWrong();
     speak("괜찮아요! 다시 한번 해 볼까요?");
   }
 
@@ -221,6 +296,7 @@
     answered = true;
     abortListening();
     if (!missedThisQuestion) starCount++;
+    playCorrect();
     dropConfetti();
 
     const country = round[current];
@@ -290,6 +366,7 @@
   // ---------- 이벤트 연결 ----------
   el.startBtn.addEventListener("click", () => {
     unlockSpeech();
+    unlockAudio();
     startGame();
   });
   el.micBtn.addEventListener("click", () => {
