@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>옵시디언 볼트 정리기 · 브라우저에서 노트 정리</title>
+<meta name="description" content="옵시디언 볼트를 브라우저에서 열어 태그·백링크·고아 노트를 분석하고 정리 리포트를 만드는 정적 웹앱. 파일은 업로드되지 않습니다." />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<header class="hero">
+  <h1>옵시디언 볼트 정리기</h1>
+  <p class="subtitle">볼트를 브라우저에서 열어 태그·연결·고아 노트를 살펴보고, 다시 넣을 정리 리포트를 만드세요.</p>
+</header>
+
+<main>
+  <section class="notice">
+    <h2>안심하세요</h2>
+    <p>
+      선택한 노트는 <strong>이 브라우저 안에서만</strong> 읽고 분석합니다.
+      어디로도 업로드하지 않고, 네트워크 요청도 없습니다. 탭을 닫으면 아무것도 남지 않아요.
+    </p>
+  </section>
+
+  <section class="card">
+    <h2>1. 볼트 열기</h2>
+    <p class="lead" id="load-hint">
+      데스크톱 브라우저는 <strong>폴더 통째로</strong>, 아이패드 사파리는 파일 앱에서
+      <strong>.md 파일 여러 개</strong>를 골라 여세요.
+    </p>
+    <div class="actions">
+      <button type="button" id="pick-dir" class="primary" hidden>📁 폴더 열기</button>
+      <label class="ghost-button" id="pick-files-label">
+        📄 파일 여러 개 선택
+        <input type="file" id="pick-files" accept=".md,.markdown,.txt" multiple hidden />
+      </label>
+      <label class="ghost-button" id="pick-webkit-label" hidden>
+        📁 폴더 선택
+        <input type="file" id="pick-webkit" webkitdirectory directory multiple hidden />
+      </label>
+    </div>
+    <p class="empty" id="load-status">아직 볼트를 열지 않았어요.</p>
+  </section>
+
+  <section class="card" id="dashboard-card" hidden>
+    <h2>2. 한눈에 보기</h2>
+    <div class="stat-grid" id="stat-grid"></div>
+  </section>
+
+  <section class="card" id="tags-card" hidden>
+    <h2>3. 태그</h2>
+    <p class="lead" id="tags-empty" hidden>태그(<code>#태그</code> 또는 프론트매터 <code>tags:</code>)가 없어요.</p>
+    <div class="tag-cloud" id="tag-cloud"></div>
+  </section>
+
+  <section class="card" id="notes-card" hidden>
+    <h2>4. 노트</h2>
+    <div class="toolbar">
+      <input type="search" id="search" placeholder="제목·내용 검색…" />
+      <div class="filters">
+        <button type="button" class="chip" data-filter="all" aria-pressed="true">전체</button>
+        <button type="button" class="chip" data-filter="orphan" aria-pressed="false">고아 노트</button>
+        <button type="button" class="chip" data-filter="broken" aria-pressed="false">깨진 링크</button>
+      </div>
+    </div>
+    <ul class="note-list" id="note-list"></ul>
+  </section>
+
+  <section class="card" id="report-card" hidden>
+    <h2>5. 정리 리포트</h2>
+    <p class="lead">
+      태그 목록·고아 노트·깨진 링크·통계를 담은 마크다운을 만들어요.
+      복사하거나 <code>정리-리포트.md</code>로 내려받아 볼트에 넣으면 지도(MOC)처럼 쓸 수 있어요.
+    </p>
+    <div class="actions">
+      <button type="button" id="copy-report" class="primary">📋 복사</button>
+      <button type="button" id="download-report" class="ghost">⬇︎ .md 내려받기</button>
+    </div>
+    <textarea id="report-out" class="report-out" readonly spellcheck="false"></textarea>
+  </section>
+</main>
+
+<div class="preview-backdrop" id="preview-backdrop" hidden>
+  <div class="preview-panel" role="dialog" aria-modal="true" aria-labelledby="preview-title">
+    <div class="preview-head">
+      <strong id="preview-title">노트</strong>
+      <button type="button" id="preview-close" class="ghost" aria-label="닫기">✕</button>
+    </div>
+    <div class="preview-meta" id="preview-meta"></div>
+    <div class="preview-body" id="preview-body"></div>
+  </div>
+</div>
+
+<footer>
+  <p>모든 처리는 브라우저 안에서만 일어납니다 · 빌드·의존성 없는 정적 웹앱</p>
+</footer>
+
+<script src="vault.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
