@@ -102,6 +102,13 @@ html, body {
   letter-spacing: .06em;
   line-height: 1.15;
 }
+/* 짧은 문장·긴 낱말: 카드 안에 들어오도록 글자 축소 */
+.word-text.long {
+  font-size: clamp(2rem, 7vw, 3.4rem);
+  letter-spacing: .02em;
+  line-height: 1.3;
+  word-break: keep-all;
+}
 .hint-emoji { font-size: clamp(3rem, 8vw, 5rem); margin-bottom: 6px; }
 .hint-btn {
   margin-top: 14px; background: #fef3c7; border: none; border-radius: 999px;
