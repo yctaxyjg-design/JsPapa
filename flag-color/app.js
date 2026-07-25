@@ -31,11 +31,13 @@
   const labelOf = (key) => (PALETTE.find((p) => p.key === key) || {}).label;
   const BLANK = "#eef0f3"; // 아직 안 칠한 칸 색
 
-  let order = [];       // 이번 판 국기 순서
-  let idx = 0;          // 현재 문제 번호
-  let selected = null;  // 고른 색 key
-  let solved = 0;       // 맞힌 개수
-  let checkedOnce = false; // 이번 국기에서 "다시 볼까요" 안내를 한 번만
+  const ROUND_SIZE = 12; // 한 판에 70개 풀에서 뽑는 국기 수
+
+  let order = [];        // 이번 판 국기 순서
+  let idx = 0;           // 현재 문제 번호
+  let selected = null;   // 고른 색 key
+  let solved = 0;        // 맞힌 개수
+  let wasComplete = false; // 이번 국기를 이미 다 칠했었는지(오답 소리 한 번만)
 
   // ---------- 화면 전환 ----------
   function show(screen) {
@@ -103,7 +105,7 @@
   // ---------- 문제 로드 ----------
   function loadFlag() {
     const flag = order[idx];
-    checkedOnce = false;
+    wasComplete = false;
     el.progress.textContent = `${idx + 1} / ${order.length}`;
     el.canvasName.textContent = flag.name;
     el.canvasWrap.innerHTML = canvasSVG(flag);
@@ -150,20 +152,28 @@
     const flag = order[idx];
     const regions = Array.from(currentSVG().querySelectorAll(".region"));
     const allFilled = regions.every((r) => r.dataset.current);
-    if (!allFilled) return;
+    if (!allFilled) {
+      wasComplete = false;
+      return;
+    }
 
     const wrong = regions.filter(
       (r) => r.dataset.current !== flag.regions[+r.dataset.idx].answer
     );
     if (wrong.length === 0) {
+      wasComplete = true;
       win();
-    } else if (!checkedOnce) {
-      checkedOnce = true;
-      wrong.forEach((r) => r.classList.add("wrong"));
-      setTimeout(() => wrong.forEach((r) => r.classList.remove("wrong")), 1800);
-      el.hint.textContent = "거의 다 됐어요! 색을 다시 볼까요? 😊";
-      speak("거의 다 됐어요. 색을 다시 볼까요?");
+      return;
     }
+    // 다 칠했는데 틀림 — 틀린 칸을 깜빡이고, 처음 완성된 순간에만 오답 소리
+    wrong.forEach((r) => r.classList.add("wrong"));
+    setTimeout(() => wrong.forEach((r) => r.classList.remove("wrong")), 1600);
+    el.hint.textContent = "앗, 색이 조금 달라요! 다시 볼까요? 😉";
+    if (!wasComplete) {
+      playWrong();
+      speak("앗, 다시 볼까요?");
+    }
+    wasComplete = true;
   }
 
   function clearFlag() {
@@ -173,7 +183,7 @@
       delete r.dataset.current;
       r.classList.remove("wrong", "pop");
     });
-    checkedOnce = false;
+    wasComplete = false;
     el.hint.textContent = "다시 색칠해 볼까요? 🎨";
   }
 
@@ -217,7 +227,7 @@
   // ---------- 게임 시작/종료 ----------
   function startGame() {
     unlockAudio();
-    order = shuffle(FLAGS.slice());
+    order = shuffle(FLAGS.slice()).slice(0, Math.min(ROUND_SIZE, FLAGS.length));
     idx = 0;
     solved = 0;
     renderStars();
@@ -274,6 +284,40 @@
     [523.25, 659.25, 783.99, 1046.5].forEach((f, i) =>
       beep(f, i * 0.11, 0.2, "triangle", 0.25)
     );
+  }
+  // 오답: 코믹하게 축 처지는 "빠~아~아~암" (기존 국기놀이와 같은 느낌)
+  function playWrong() {
+    const ctx = getAudio();
+    if (!ctx) return;
+    unlockAudio();
+    const t0 = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const g = ctx.createGain();
+    const filter = ctx.createBiquadFilter();
+    filter.type = "lowpass";
+    filter.frequency.setValueAtTime(1000, t0);
+    osc.type = "sawtooth";
+    osc.frequency.setValueAtTime(233, t0);
+    osc.frequency.setValueAtTime(233, t0 + 0.2);
+    osc.frequency.linearRampToValueAtTime(207, t0 + 0.22);
+    osc.frequency.setValueAtTime(207, t0 + 0.42);
+    osc.frequency.linearRampToValueAtTime(185, t0 + 0.44);
+    osc.frequency.setValueAtTime(185, t0 + 0.64);
+    osc.frequency.linearRampToValueAtTime(155, t0 + 0.66);
+    osc.frequency.linearRampToValueAtTime(110, t0 + 1.05);
+    const lfo = ctx.createOscillator();
+    const lfoGain = ctx.createGain();
+    lfo.frequency.setValueAtTime(7, t0);
+    lfoGain.gain.setValueAtTime(0.05, t0);
+    g.gain.setValueAtTime(0.22, t0);
+    g.gain.setValueAtTime(0.22, t0 + 0.85);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + 1.15);
+    lfo.connect(lfoGain).connect(g.gain);
+    osc.connect(filter).connect(g).connect(ctx.destination);
+    osc.start(t0);
+    lfo.start(t0);
+    osc.stop(t0 + 1.2);
+    lfo.stop(t0 + 1.2);
   }
 
   // ---------- TTS ----------
