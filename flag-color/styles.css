@@ -1,0 +1,327 @@
+/* 국기 색칠 놀이 — 6세용, iPad 가로/세로 대응. 외부 폰트·CDN 없음. */
+
+:root {
+  --bg1: #a8e6ff;
+  --bg2: #d7f5ff;
+  --bg3: #fff6d6;
+  --surface: #ffffff;
+  --text: #1a3550;
+  --muted: #5b7186;
+  --accent: #007aff;        /* 애플 시스템 블루 */
+  --accent-hover: #0a63cc;
+  --frame: #33373d;         /* 국기 테두리 */
+  --blank-stroke: #b8bcc4;  /* 안 칠한 칸 경계 */
+  --radius: 20px;
+  --shadow: 0 10px 30px rgba(20, 60, 100, 0.18);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  font-family: "Apple SD Gothic Neo", "Noto Sans KR", -apple-system, BlinkMacSystemFont, sans-serif;
+  color: var(--text);
+  background: linear-gradient(160deg, var(--bg1) 0%, var(--bg2) 45%, var(--bg3) 100%);
+  overflow: hidden;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+#app { height: 100%; }
+
+.screen {
+  display: none;
+  height: 100%;
+  flex-direction: column;
+  padding:
+    max(12px, env(safe-area-inset-top))
+    max(14px, env(safe-area-inset-right))
+    max(12px, env(safe-area-inset-bottom))
+    max(14px, env(safe-area-inset-left));
+}
+.screen.active { display: flex; }
+
+/* ---------- 시작 / 끝 화면 ---------- */
+.start-inner {
+  margin: auto;
+  text-align: center;
+  padding: 24px;
+  max-width: 560px;
+}
+.start-emoji {
+  font-size: clamp(72px, 16vw, 120px);
+  animation: bounce 2s ease-in-out infinite;
+}
+h1 {
+  font-size: clamp(32px, 7vw, 46px);
+  color: var(--text);
+  margin: 10px 0;
+}
+.start-sub {
+  font-size: clamp(17px, 3.6vw, 22px);
+  color: var(--muted);
+  margin-bottom: 26px;
+  line-height: 1.5;
+}
+.big-btn {
+  font-size: clamp(22px, 5vw, 30px);
+  font-weight: 800;
+  color: #fff;
+  background: var(--accent);
+  border: none;
+  border-radius: 999px;
+  padding: 18px 44px;
+  min-height: 64px;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  transition: transform 0.12s ease, background 0.12s ease;
+}
+.big-btn:active { transform: scale(0.95); background: var(--accent-hover); }
+.end-stars { font-size: clamp(30px, 7vw, 46px); margin: 14px 0 26px; letter-spacing: 4px; }
+
+/* ---------- 놀이 화면 ---------- */
+.play-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.icon-btn {
+  font-size: 26px;
+  width: 52px;
+  height: 52px;
+  border: none;
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  cursor: pointer;
+}
+.icon-btn:active { transform: scale(0.94); }
+.progress {
+  font-size: clamp(18px, 4vw, 24px);
+  font-weight: 800;
+  background: var(--surface);
+  padding: 8px 18px;
+  border-radius: 999px;
+  box-shadow: var(--shadow);
+}
+.stars {
+  margin-left: auto;
+  font-size: clamp(20px, 4.6vw, 28px);
+  letter-spacing: 2px;
+  min-height: 1em;
+}
+
+.play-body {
+  flex: 1;
+  display: flex;
+  gap: clamp(12px, 3vw, 28px);
+  min-height: 0;
+  align-items: center;
+  justify-content: center;
+}
+.canvas-col {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  gap: 10px;
+}
+.canvas-wrap {
+  width: 100%;
+  max-width: min(58vh, 560px);
+  filter: drop-shadow(0 12px 26px rgba(20, 60, 100, 0.22));
+}
+.canvas-name {
+  font-size: clamp(20px, 4.6vw, 28px);
+  font-weight: 800;
+}
+
+.flag-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 8px;
+  overflow: visible;
+}
+.frame {
+  fill: none;
+  stroke: var(--frame);
+  stroke-width: 3;
+}
+.region {
+  stroke: var(--blank-stroke);
+  stroke-width: 2.5;
+  cursor: pointer;
+  transition: fill 0.15s ease;
+}
+.region.pop { animation: pop 0.25s ease; transform-box: fill-box; transform-origin: center; }
+.region.wrong {
+  stroke: #ff3b30;
+  stroke-width: 5;
+  animation: wrongPulse 0.6s ease infinite;
+}
+.ref-region { stroke: rgba(255, 255, 255, 0.35); stroke-width: 0.6; }
+
+/* 오른쪽: 정답 미리보기 + 처음부터 */
+.ref-col {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: clamp(120px, 22vw, 190px);
+}
+.ref-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 12px;
+  width: 100%;
+  text-align: center;
+}
+.ref-title {
+  font-size: clamp(13px, 2.6vw, 16px);
+  font-weight: 700;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.ref-wrap { width: 100%; }
+
+.mid-btn {
+  font-size: clamp(15px, 3.4vw, 19px);
+  font-weight: 800;
+  color: #fff;
+  background: var(--accent);
+  border: none;
+  border-radius: 999px;
+  padding: 12px 22px;
+  min-height: 48px;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+}
+.mid-btn:active { transform: scale(0.95); }
+.mid-btn.ghost { background: var(--surface); color: var(--accent); }
+
+/* ---------- 팔레트 ---------- */
+.palette {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: clamp(10px, 2.4vw, 18px);
+  padding: 12px 6px 4px;
+}
+.swatch {
+  width: clamp(48px, 10vw, 64px);
+  height: clamp(48px, 10vw, 64px);
+  border-radius: 50%;
+  background: var(--sw);
+  border: 4px solid #fff;
+  box-shadow: 0 4px 12px rgba(20, 60, 100, 0.22);
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+.swatch:active { transform: scale(0.92); }
+.swatch.on {
+  transform: scale(1.16);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.35), 0 6px 16px rgba(20, 60, 100, 0.3);
+}
+.palette.nudge { animation: nudge 0.5s ease; }
+
+.hint {
+  text-align: center;
+  font-size: clamp(15px, 3.4vw, 20px);
+  font-weight: 700;
+  color: var(--muted);
+  min-height: 1.4em;
+  margin-top: 2px;
+}
+
+/* ---------- 완성 화면 ---------- */
+.win-card {
+  margin: auto;
+  background: var(--surface);
+  border-radius: 28px;
+  box-shadow: var(--shadow);
+  padding: 28px 26px 24px;
+  text-align: center;
+  max-width: 460px;
+  width: min(92vw, 460px);
+}
+.celebrate { font-size: 60px; animation: bounce 1.4s ease-in-out infinite; }
+.win-flag {
+  width: min(60vw, 260px);
+  margin: 6px auto 12px;
+  filter: drop-shadow(0 8px 18px rgba(20, 60, 100, 0.22));
+}
+.win-name { font-size: clamp(24px, 5.4vw, 32px); margin-bottom: 10px; }
+.win-fact {
+  font-size: clamp(16px, 3.6vw, 20px);
+  color: var(--muted);
+  line-height: 1.55;
+  margin-bottom: 20px;
+}
+.win-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+/* ---------- 세로 화면: 미리보기를 위로 작게 ---------- */
+@media (orientation: portrait) {
+  .play-body { flex-direction: column-reverse; gap: 10px; }
+  .ref-col {
+    flex-direction: row;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+  }
+  .ref-card { width: auto; display: flex; align-items: center; gap: 12px; }
+  .ref-title { margin: 0; white-space: nowrap; }
+  .ref-wrap { width: clamp(90px, 26vw, 150px); }
+  .canvas-wrap { max-width: min(80vw, 70vh); }
+}
+
+/* ---------- 색종이 ---------- */
+.confetti { position: fixed; inset: 0; pointer-events: none; z-index: 50; overflow: hidden; }
+.confetti span {
+  position: absolute;
+  top: -20px;
+  width: 12px;
+  height: 16px;
+  border-radius: 2px;
+  animation: fall 2s linear forwards;
+}
+
+/* ---------- 애니메이션 ---------- */
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-14px); }
+}
+@keyframes pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+@keyframes wrongPulse {
+  0%, 100% { stroke-opacity: 1; }
+  50% { stroke-opacity: 0.3; }
+}
+@keyframes nudge {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-8px); }
+  75% { transform: translateX(8px); }
+}
+@keyframes fall {
+  to { transform: translateY(105vh) rotate(540deg); opacity: 0.9; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

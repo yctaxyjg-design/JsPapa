@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="국기 색칠" />
+<title>국기 색칠 놀이 🎨</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div id="app">
+
+  <!-- 시작 화면 -->
+  <section id="start-screen" class="screen active">
+    <div class="start-inner">
+      <div class="start-emoji">🎨🌍</div>
+      <h1>국기 색칠 놀이</h1>
+      <p class="start-sub">색을 고르고, 빈 국기를 톡톡 눌러 색을 채워요!</p>
+      <button id="start-btn" class="big-btn">놀이 시작! 🚀</button>
+    </div>
+  </section>
+
+  <!-- 놀이 화면 -->
+  <section id="play-screen" class="screen">
+    <header class="play-header">
+      <button id="home-btn" class="icon-btn" aria-label="처음으로">🏠</button>
+      <div id="progress" class="progress">1 / 9</div>
+      <div id="stars" class="stars" aria-label="모은 별"></div>
+    </header>
+
+    <div class="play-body">
+      <div class="canvas-col">
+        <div class="canvas-wrap" id="canvas-wrap"><!-- 색칠할 SVG 국기 --></div>
+        <p class="canvas-name" id="canvas-name">프랑스</p>
+      </div>
+
+      <aside class="ref-col">
+        <div class="ref-card">
+          <p class="ref-title">이렇게 색칠해요</p>
+          <div class="ref-wrap" id="ref-wrap"><!-- 정답 국기 미리보기 --></div>
+        </div>
+        <button id="clear-btn" class="mid-btn ghost">🧽 처음부터</button>
+      </aside>
+    </div>
+
+    <div id="palette" class="palette" role="group" aria-label="색 고르기"></div>
+    <p id="hint" class="hint" aria-live="polite"></p>
+  </section>
+
+  <!-- 완성 화면 -->
+  <section id="win-screen" class="screen">
+    <div class="win-card">
+      <div class="celebrate">🎉</div>
+      <div class="win-flag" id="win-flag"></div>
+      <h2 id="win-name">프랑스</h2>
+      <p class="win-fact" id="win-fact"></p>
+      <div class="win-actions">
+        <button id="replay-btn" class="mid-btn ghost">🔊 다시 듣기</button>
+        <button id="next-btn" class="mid-btn">다음 국기 ➡️</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 끝 화면 -->
+  <section id="end-screen" class="screen">
+    <div class="start-inner">
+      <div class="start-emoji">🏆</div>
+      <h1>참 잘했어요!</h1>
+      <p id="end-score" class="start-sub"></p>
+      <div id="end-stars" class="end-stars"></div>
+      <button id="restart-btn" class="big-btn">한 번 더 하기 🔄</button>
+    </div>
+  </section>
+
+</div>
+
+<script src="flags.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
