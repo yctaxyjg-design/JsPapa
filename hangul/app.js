@@ -246,6 +246,8 @@
     tries = 0;
     const { w, e } = current();
     $("wordText").textContent = w;
+    // 문장·긴 낱말은 글자를 줄여 카드 밖으로 넘치지 않게
+    $("wordText").classList.toggle("long", w.includes(" ") || w.length > 5);
     const hint = $("hintEmoji");
     hint.textContent = e;
     hint.classList.add("hidden");
