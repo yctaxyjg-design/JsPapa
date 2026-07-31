@@ -12,8 +12,8 @@
 법제처 OpenAPI 검색은 전부 '제목(안건명·재결례명) 매칭'이라 여러 낱말을
 이어 붙이면 거의 항상 0건이 나온다. 이전 세션이 이 0건을 "DB에 없음"으로
 읽어서 잘못된 결론 두 개를 만들었다.
-  search_tax_tribunal("양도소득 개인지방소득세 무신고가산세") → 0건
-  search_tax_tribunal("개인지방소득세")                      → 26건
+  search_tax_tribunal_decisions("양도소득 개인지방소득세 무신고가산세") → 0건
+  search_tax_tribunal_decisions("개인지방소득세")                      → 26건
 앞으로 0건이 나오면 ① 핵심어 하나로 줄이고 ② search=2(본문검색)로 재조회한
 뒤에만 "범위 밖"이라고 판단해라.
 
