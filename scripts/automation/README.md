@@ -27,8 +27,8 @@ cp scripts/automation/config.example.sh scripts/automation/config.sh
 # 2) launchd 등록 (매일 자동 실행)
 bash scripts/automation/install.sh
 
-# 3) 즉시 한 번 테스트
-launchctl kickstart -k gui/$(id -u)/com.jspapa.ft-edit-save
+# 3) 즉시 한 번 테스트 (하루 1회 가드 우회)
+bash scripts/automation/run.sh --force
 tail -f "$HOME/Library/Logs/ft-edit-save/$(date +%Y-%m-%d).log"
 ```
 
@@ -36,11 +36,18 @@ tail -f "$HOME/Library/Logs/ft-edit-save/$(date +%Y-%m-%d).log"
 
 - `install.sh`가 `~/Library/LaunchAgents/com.jspapa.ft-edit-save.plist`를 만들고
   `StartCalendarInterval`로 매일 `HOUR:MINUTE`에 `run.sh`를 실행하도록 등록한다.
-- 맥이 그 시각에 꺼져 있었거나 잠자기였다면, launchd가 **깨어난 직후 놓친 회차를 실행**한다
-  (launchd `StartCalendarInterval`의 기본 동작).
+- **잠자기 캐치업:** 맥이 그 시각에 잠자기였다면 launchd가 깨어난 직후 놓친 회차를 실행한다
+  (`StartCalendarInterval` 기본 동작).
+- **전원 OFF 캐치업:** 맥이 예정 시각에 **완전히 꺼져 있었다면** `StartCalendarInterval`은
+  그 회차를 큐잉하지 못한다. 이를 위해 plist에 `RunAtLoad=true`를 두어 **다음 부팅/로그인 직후**
+  `run.sh`를 실행하고, 그날치를 따라잡는다.
+- **하루 1회 보장:** `run.sh`는 성공한 날짜를 `~/Library/Logs/ft-edit-save/.last-success-date`에
+  기록한다. 이미 오늘 성공했으면 건너뛰고(중복 방지), **예정 시각 이전**의 로그인에서는 실행하지
+  않는다(조기 실행 방지). 실패한 날은 스탬프를 남기지 않아 다음 트리거에서 재시도한다.
 - `run.sh`는 `claude -p "$FT_EDIT_COMMAND" $CLAUDE_FLAGS`를 실행하고
-  `~/Library/Logs/ft-edit-save/<날짜>.log`에 전 과정을 남긴다.
-- `flock`으로 중복 실행을 막는다.
+  같은 로그 파일에 전 과정을 남긴다. `flock`으로 동시 실행도 막는다.
+- 즉시 테스트는 위 가드를 우회하는 `run.sh --force`를 쓴다.
+  (`launchctl kickstart`는 실제 launchd 경로로 트리거하지만 "하루 1회" 가드의 영향을 받는다.)
 
 ## 무인 실행 시 권한(중요)
 

@@ -8,8 +8,9 @@
 # ── 매일 실행할 명령 ─────────────────────────────────────────────
 # 로컬에서 이미 작동하는 "ft edit 저장" 슬래시 명령/프롬프트.
 # claude CLI에 그대로 `claude -p "<이 값>"` 으로 전달된다.
-# 예: "/ft-edit", "/economist-weekly", 또는 자유 프롬프트 문장.
-FT_EDIT_COMMAND="/ft-edit"
+# 이 저장소의 실제 명령은 `/ftedit-crosscheck` (FT Edit 일일 분석 대조·저장).
+# 다른 명령을 돌리려면 값만 바꾼다. 예: "/economist-weekly", 자유 프롬프트 문장.
+FT_EDIT_COMMAND="/ftedit-crosscheck"
 
 # ── 실행 시각 (로컬 타임존, 24시간제) ────────────────────────────
 FT_EDIT_HOUR=7
