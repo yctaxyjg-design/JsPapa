@@ -19,19 +19,10 @@
       "Bash(mv:*)",
       "Bash(rm:-f *)",
       "Bash(chmod:*)",
-      "Bash(bash scripts/economist/*)",
-      "Bash(./scripts/economist/*)",
-      "Bash(scripts/economist/*)",
       "Bash(git status:*)",
       "Bash(git diff:*)",
       "Bash(git log:*)",
-      "Bash(git rev-parse:*)",
-      "WebFetch(domain:economist.com)",
-      "WebFetch(domain:www.economist.com)"
-    ],
-    "deny": [
-      "WebFetch(domain:click.e.economist.com)",
-      "Bash(curl:*click.e.economist.com*)"
+      "Bash(git rev-parse:*)"
     ]
   }
 }
