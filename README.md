@@ -42,6 +42,12 @@ $P 알고리즘 손글씨 숫자 인식기를 담고 있습니다. 자세한 내
 볼트에 다시 넣을 **정리 리포트(.md)** 를 만드는 정적 웹앱. 노트는 업로드 없이 브라우저 안에서만
 분석합니다. 자세한 내용은 [`obsidian/README.md`](obsidian/README.md).
 
+## 🧭 AI 워크플로 스캔 (`ai-workflow/`)
+
+AI 도구(Claude Code·Codex/ChatGPT·Gemini·Ollama 등)의 주간 변화를 훑고 **이번 주에 실제로 시험해볼 것만**
+우선순위·시험 절차·합격 기준까지 정해 남기는 실행 대기열. 주장마다 검증상태(`확인`/`제공`/`추론`)를 붙여
+원문 대조를 한 것과 안 한 것을 섞지 않습니다. 자세한 내용은 [`ai-workflow/README.md`](ai-workflow/README.md).
+
 ## iPad 전원 스케줄러
 
 iPad의 전원을 시간대별로 켜고/끄는 일정을 관리하고, 그 일정을 iOS 단축어(Shortcuts) 오토메이션으로 설정하는 방법을 안내해주는 정적 웹앱입니다.
