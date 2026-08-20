@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>2026_분기실적_취합본_v3_최종(수정).xlsx - Excel</title>
+<meta name="description" content="스프레드시트 화면으로 국내 주식·코인 시세를 보는 정적 웹앱. 시세는 브라우저에서 직접 가져오고 설정은 이 브라우저에만 저장됩니다." />
+<meta name="color-scheme" content="light" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='4' fill='%23217346'/%3E%3Ctext x='16' y='23' font-family='Arial,sans-serif' font-size='20' font-weight='bold' fill='%23fff' text-anchor='middle'%3EX%3C/text%3E%3C/svg%3E" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<!-- 제목 표시줄 -->
+<div class="titlebar">
+  <div class="qat" aria-hidden="true">
+    <span class="qat-logo">X</span>
+    <span class="qat-btn" title="저장">￭</span>
+    <span class="qat-btn" title="실행 취소">↶</span>
+    <span class="qat-btn" title="다시 실행">↷</span>
+  </div>
+  <div class="titlebar-name" id="doc-title">2026_분기실적_취합본_v3_최종(수정).xlsx  ·  Excel</div>
+  <div class="titlebar-right" aria-hidden="true">
+    <span class="win-btn">—</span><span class="win-btn">▢</span><span class="win-btn close">✕</span>
+  </div>
+</div>
+
+<!-- 리본 -->
+<nav class="ribbon-tabs" id="ribbon-tabs" role="tablist" aria-label="리본 메뉴">
+  <button type="button" class="rtab" data-tab="file">파일</button>
+  <button type="button" class="rtab is-active" data-tab="home" role="tab" aria-selected="true">홈</button>
+  <button type="button" class="rtab" data-tab="insert" role="tab" aria-selected="false">삽입</button>
+  <button type="button" class="rtab" data-tab="layout" role="tab" aria-selected="false">페이지 레이아웃</button>
+  <button type="button" class="rtab" data-tab="formula" role="tab" aria-selected="false">수식</button>
+  <button type="button" class="rtab" data-tab="data" role="tab" aria-selected="false">데이터</button>
+  <button type="button" class="rtab" data-tab="review" role="tab" aria-selected="false">검토</button>
+  <button type="button" class="rtab" data-tab="view" role="tab" aria-selected="false">보기</button>
+</nav>
+
+<div class="ribbon" id="ribbon">
+  <!-- 홈 -->
+  <div class="ribbon-panel" data-panel="home">
+    <div class="rgroup">
+      <div class="rbig"><span class="ricon icon-paste"></span><span>붙여넣기</span></div>
+      <div class="rgroup-name">클립보드</div>
+    </div>
+    <div class="rgroup">
+      <div class="rrow">
+        <select class="rsel" disabled><option>맑은 고딕</option></select>
+        <select class="rsel narrow" disabled><option>11</option></select>
+      </div>
+      <div class="rrow">
+        <span class="rbtn bold">가</span><span class="rbtn ital">가</span><span class="rbtn und">가</span>
+        <span class="rsep"></span>
+        <span class="rbtn">田</span><span class="rbtn">▒</span>
+      </div>
+      <div class="rgroup-name">글꼴</div>
+    </div>
+    <div class="rgroup">
+      <div class="rrow"><span class="rbtn">≡</span><span class="rbtn">≣</span><span class="rbtn">≢</span></div>
+      <div class="rrow"><span class="rbtn">병합하고 가운데 맞춤</span></div>
+      <div class="rgroup-name">맞춤</div>
+    </div>
+    <div class="rgroup">
+      <div class="rrow"><select class="rsel" disabled><option>회계</option></select></div>
+      <div class="rrow"><span class="rbtn">₩</span><span class="rbtn">%</span><span class="rbtn">,</span><span class="rbtn">.00</span></div>
+      <div class="rgroup-name">표시 형식</div>
+    </div>
+    <div class="rgroup">
+      <div class="rrow"><button type="button" class="rbtn live" data-cmd="refresh">모두 새로 고침</button></div>
+      <div class="rrow"><button type="button" class="rbtn live" data-cmd="decoy">화면 보호</button></div>
+      <div class="rgroup-name">편집</div>
+    </div>
+  </div>
+
+  <!-- 데이터 -->
+  <div class="ribbon-panel" data-panel="data" hidden>
+    <div class="rgroup">
+      <div class="rbig live" data-cmd="refresh"><span class="ricon icon-refresh"></span><span>모두 새로 고침</span></div>
+      <div class="rgroup-name">쿼리 및 연결</div>
+    </div>
+    <div class="rgroup">
+      <div class="rrow"><button type="button" class="rbtn live" data-cmd="add-item">항목 추가</button></div>
+      <div class="rrow"><button type="button" class="rbtn live" data-cmd="edit-holdings">보유 수량 편집</button></div>
+      <div class="rgroup-name">데이터 도구</div>
+    </div>
+    <div class="rgroup">
+      <div class="rrow"><button type="button" class="rbtn live" data-cmd="settings">연결 속성</button></div>
+      <div class="rrow">
+        <label class="rcheck"><input type="checkbox" id="auto-refresh" checked /> 자동 새로 고침</label>
+      </div>
+      <div class="rgroup-name">연결</div>
+    </div>
+  </div>
+
+  <!-- 보기 -->
+  <div class="ribbon-panel" data-panel="view" hidden>
+    <div class="rgroup">
+      <div class="rrow"><label class="rcheck"><input type="checkbox" id="opt-gridlines" checked /> 눈금선</label></div>
+      <div class="rrow"><label class="rcheck"><input type="checkbox" id="opt-headings" checked /> 머리글</label></div>
+      <div class="rgroup-name">표시</div>
+    </div>
+    <div class="rgroup">
+      <div class="rrow"><label class="rcheck"><input type="checkbox" id="opt-blur-decoy" /> 창 벗어나면 화면 보호</label></div>
+      <div class="rrow"><button type="button" class="rbtn live" data-cmd="decoy">화면 보호 (Esc)</button></div>
+      <div class="rgroup-name">창</div>
+    </div>
+    <div class="rgroup">
+      <div class="rrow"><button type="button" class="rbtn live" data-cmd="zoom-out">축소</button><button type="button" class="rbtn live" data-cmd="zoom-in">확대</button></div>
+      <div class="rgroup-name">확대/축소</div>
+    </div>
+  </div>
+
+  <!-- 나머지 탭(장식) -->
+  <div class="ribbon-panel" data-panel="decor" hidden>
+    <div class="rgroup">
+      <div class="rbig"><span class="ricon icon-table"></span><span>피벗 테이블</span></div>
+      <div class="rgroup-name">표</div>
+    </div>
+    <div class="rgroup">
+      <div class="rrow"><span class="rbtn">차트</span><span class="rbtn">스파크라인</span><span class="rbtn">도형</span></div>
+      <div class="rrow"><span class="rbtn">머리글/바닥글</span><span class="rbtn">개체</span></div>
+      <div class="rgroup-name">일러스트레이션</div>
+    </div>
+    <div class="rgroup">
+      <div class="rrow"><span class="rbtn">이름 관리자</span><span class="rbtn">수식 계산</span></div>
+      <div class="rrow"><span class="rbtn">오류 검사</span><span class="rbtn">계산 옵션</span></div>
+      <div class="rgroup-name">정의된 이름</div>
+    </div>
+  </div>
+</div>
+
+<!-- 수식 입력줄 -->
+<div class="formulabar">
+  <div class="namebox" id="name-box">A1</div>
+  <div class="fx" aria-hidden="true"><i>fx</i></div>
+  <div class="finput" id="formula-input"></div>
+</div>
+
+<!-- 시트 -->
+<main class="sheet-wrap" id="sheet-wrap">
+  <table class="sheet" id="sheet"><tbody id="sheet-body"></tbody></table>
+</main>
+
+<!-- 시트 탭 -->
+<div class="sheettabs">
+  <div class="tab-nav" aria-hidden="true"><span>◀</span><span>▶</span></div>
+  <div class="tabs" id="sheet-tabs" role="tablist" aria-label="시트"></div>
+  <button type="button" class="tab-add" data-cmd="add-item" title="항목 추가">＋</button>
+</div>
+
+<!-- 상태 표시줄 -->
+<div class="statusbar">
+  <span class="st-ready" id="st-status">준비</span>
+  <span class="st-src" id="st-source"></span>
+  <span class="st-spacer"></span>
+  <span class="st-agg" id="st-agg"></span>
+  <span class="st-views" aria-hidden="true"><span class="vbtn is-on">▤</span><span class="vbtn">▥</span><span class="vbtn">▦</span></span>
+  <span class="st-zoom"><button type="button" class="zbtn" data-cmd="zoom-out" aria-label="축소">－</button><span id="st-zoom-val">100%</span><button type="button" class="zbtn" data-cmd="zoom-in" aria-label="확대">＋</button></span>
+</div>
+
+<!-- 대화상자 -->
+<div class="modal-back" id="modal-back" hidden>
+  <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dlg-title">
+    <div class="dlg-title"><span id="dlg-title">대화상자</span><button type="button" class="dlg-x" id="dlg-close" aria-label="닫기">✕</button></div>
+    <div class="dlg-body" id="dlg-body"></div>
+    <div class="dlg-foot" id="dlg-foot"></div>
+  </div>
+</div>
+
+<script src="quotes.js"></script>
+<script src="sheets.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
