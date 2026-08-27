@@ -1,0 +1,16 @@
+{
+  "ft": {
+    "name": "Financial Times",
+    "loginUrl": "https://www.ft.com/login",
+    "readySelector": "a[href*='/myft']",
+    "articleSelector": "article, .article__content-body, .n-content-body",
+    "titleSelector": "h1.article-classifier__title, h1[data-trackable='header'], h1"
+  },
+  "economist": {
+    "name": "The Economist",
+    "loginUrl": "https://www.economist.com/api/auth/login",
+    "readySelector": "a[href*='/logout'], [data-test-id='account-menu']",
+    "articleSelector": "article, [data-test-id='Article'], .article__body-text, section.article__body",
+    "titleSelector": "h1[data-test-id='Article-headline'], h1.article__headline, h1"
+  }
+}

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="육아분담" />
+<meta name="theme-color" content="#1f3a5f" />
+<title>육아 공평분담 · 스프레드시트</title>
+<link rel="manifest" href="manifest.webmanifest" />
+<link rel="icon" href="icon.svg" type="image/svg+xml" />
+<link rel="apple-touch-icon" href="icon-192.png" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <h1>육아 공평분담</h1>
+    <p class="tag">기억이 아니라 기록으로, 공평하게</p>
+  </div>
+</header>
+
+<main>
+  <!-- 오늘 기록 -->
+  <section class="card">
+    <div class="day-head">
+      <button type="button" class="nav" id="prev-day" aria-label="이전 날">‹</button>
+      <label class="date-pick">
+        <input type="date" id="date" />
+        <span id="date-label" class="date-label"></span>
+      </label>
+      <button type="button" class="nav" id="next-day" aria-label="다음 날">›</button>
+    </div>
+    <p class="hint">각 항목에서 <b>실제로 담당한 사람</b>을 탭하세요. 함께 했으면 <b>함께</b>.</p>
+    <div id="slots" class="slots"></div>
+  </section>
+
+  <!-- 통계 -->
+  <section class="card">
+    <h2>누적 통계</h2>
+    <div class="stat-grid">
+      <div class="stat mom">
+        <span class="stat-cap">누적 담당</span>
+        <span class="stat-name" id="s-count-a">엄마</span>
+        <span class="stat-num" id="count-a">0</span>
+      </div>
+      <div class="stat dad">
+        <span class="stat-cap">누적 담당</span>
+        <span class="stat-name" id="s-count-b">아빠</span>
+        <span class="stat-num" id="count-b">0</span>
+      </div>
+      <div class="stat neutral">
+        <span class="stat-cap">육아일 환산 격차</span>
+        <span class="stat-num" id="days-gap">0일</span>
+        <span class="stat-sub" id="days-who">균형</span>
+      </div>
+      <div class="stat neutral">
+        <span class="stat-cap">취침 담당 격차</span>
+        <span class="stat-num" id="bed-gap">0회</span>
+        <span class="stat-sub" id="bed-who">균형</span>
+      </div>
+    </div>
+
+    <div class="share-block">
+      <div class="pie-box">
+        <div class="pie" id="pie"></div>
+        <div class="pie-legend">
+          <span class="lg mom"><i></i><b id="pie-a">50%</b> <span id="l-a">엄마</span></span>
+          <span class="lg dad"><i></i><b id="pie-b">50%</b> <span id="l-b">아빠</span></span>
+        </div>
+      </div>
+      <p class="pie-cap" id="pie-cap">이번 달 분담률</p>
+    </div>
+  </section>
+
+  <!-- iCloud / 데이터 -->
+  <section class="card">
+    <h2>iCloud Drive 공유 · 백업</h2>
+    <p class="hint">
+      두 사람이 각자 홈화면 앱에서 기록한 뒤, 아래 <b>백업</b>으로 만든 파일을
+      <b>공유 iCloud Drive 폴더</b>에 저장하세요. 상대가 <b>불러오기</b>로 가져오면
+      셀 단위로 <b>병합</b>됩니다(각자 기록해도 최신 값끼리 합쳐짐).
+    </p>
+    <div class="actions">
+      <button type="button" id="backup-btn" class="primary">☁️ iCloud에 백업</button>
+      <label class="ghost-button">
+        📥 불러오기 · 병합
+        <input type="file" id="import-input" accept="application/json,.json" hidden />
+      </label>
+    </div>
+    <div class="actions">
+      <button type="button" id="names-btn" class="ghost">✏️ 이름 바꾸기</button>
+      <button type="button" id="clear-day-btn" class="ghost">오늘 기록 지우기</button>
+      <button type="button" id="clear-all-btn" class="ghost danger">전체 삭제</button>
+    </div>
+    <p class="saved-note" id="saved-note"></p>
+  </section>
+
+  <!-- 기록 규칙 -->
+  <section class="card rules">
+    <h2>기록 규칙</h2>
+    <ol>
+      <li>실제 담당한 사람 칸을 탭한다.</li>
+      <li>함께 했으면 <b>함께</b> — 양쪽 0.5씩.</li>
+      <li>매주 일요일에 누적을 함께 확인한다.</li>
+      <li>보이지 않는 노동(병원·준비물·약속)은 비고에 메모.</li>
+    </ol>
+  </section>
+</main>
+
+<footer>
+  <p>데이터는 이 기기의 브라우저(localStorage)에만 저장됩니다. 공유는 iCloud Drive 백업 파일로 이루어집니다.</p>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
