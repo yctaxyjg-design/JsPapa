@@ -27,6 +27,12 @@ economist/out/
 # Local Claude Code settings overrides (machine-specific)
 .claude/settings.local.json
 
+### Mail aggregator ###
+# Real account credentials — never commit
+mail-aggregator/accounts.json
+mail-aggregator/node_modules/
+mail-aggregator/package-lock.json
+
 ### ft-edit-save automation ###
 # Machine-specific config (command / schedule / claude CLI path), never commit
 scripts/automation/config.sh

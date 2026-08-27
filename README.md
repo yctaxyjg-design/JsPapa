@@ -42,6 +42,13 @@ $P 알고리즘 손글씨 숫자 인식기를 담고 있습니다. 자세한 내
 볼트에 다시 넣을 **정리 리포트(.md)** 를 만드는 정적 웹앱. 노트는 업로드 없이 브라우저 안에서만
 분석합니다. 자세한 내용은 [`obsidian/README.md`](obsidian/README.md).
 
+## 📬 통합 메일함 (`mail-aggregator/`)
+
+여러 메일 서비스(Gmail·네이버·다음·Outlook 등)의 받은편지함을 **IMAP**으로 모아
+한 화면의 통합 타임라인으로 보여주고, 주기적(기본 5분)으로 자동 동기화하는 로컬 웹앱.
+계정별 색상 뱃지·안 읽음 카운트·계정별 탭 필터를 제공하며, 계정 정보는 gitignore된
+`accounts.json`에만 저장됩니다. 자세한 내용은 [`mail-aggregator/README.md`](mail-aggregator/README.md).
+
 ## iPad 전원 스케줄러
 
 iPad의 전원을 시간대별로 켜고/끄는 일정을 관리하고, 그 일정을 iOS 단축어(Shortcuts) 오토메이션으로 설정하는 방법을 안내해주는 정적 웹앱입니다.
